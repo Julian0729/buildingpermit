@@ -5,31 +5,32 @@
  */
 
 // Composables
-import { createRouter, createWebHistory } from 'vue-router/auto'
-import { routes } from 'vue-router/auto-routes'
+import { createRouter, createWebHistory } from "vue-router/auto";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
-})
+  history: createWebHistory(process.env.BASE_URL),
 
-// Workaround for https://github.com/vitejs/vite/issues/11804
-router.onError((err, to) => {
-  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
-    if (localStorage.getItem('vuetify:dynamic-reload')) {
-      console.error('Dynamic import error, reloading page did not fix it', err)
-    } else {
-      console.log('Reloading page to fix dynamic import error')
-      localStorage.setItem('vuetify:dynamic-reload', 'true')
-      location.assign(to.fullPath)
-    }
-  } else {
-    console.error(err)
-  }
-})
+  routes: [
+    {
+      path: "/",
+      name: "Login",
+      component: () => import("@/pages/Login.vue"), // Or any other component for the root
+    },
 
-router.isReady().then(() => {
-  localStorage.removeItem('vuetify:dynamic-reload')
-})
+    {
+      path: "/index",
+      name: "page",
+      component: () => import("@/pages/index.vue"),
+    },
 
-export default router
+    {
+      path: "/UnifiedApplicationForm",
+      name: "UnfiedApplicationForm",
+      component: () => import("@/pages/UnifiedApplicationForm.vue"),
+    },
+
+    // ADD MORE IN HERE USING THE {  Path: ‘/’},
+  ],
+});
+
+export default router;
