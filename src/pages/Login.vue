@@ -51,8 +51,6 @@
         Log In
       </v-btn>
 
-      <v-btn to="/UnifiedApplicationForm"> Button </v-btn>
-
       <v-card-text class="text-center">
         <a
           class="text-blue text-decoration-none"
