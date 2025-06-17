@@ -317,11 +317,20 @@
             </v-col>
           </v-row>
           <h4 class="text-subtitle-1 mt-4 mb-2">PREPARED BY</h4>
-          <div class="static-line"></div>
+          <!-- This will remain a v-text-field because it needs to be interactive -->
+          <v-text-field
+            v-model="form.buildingDetails.preparedBy"
+            label="Prepared By"
+            clearable
+            variant="plain"
+            density="compact"
+            hide-details
+            class="plain-input"
+          />
         </v-card-text>
       </v-card>
 
-      <!-- BOX 3 & BOX 4 - Non-Interactive Display -->
+      <!-- BOX 3 & BOX 4 - Reverted to Static Display -->
       <v-row class="mb-6">
         <v-col cols="12" md="6">
           <v-card elevation="2" class="h-100">
@@ -336,27 +345,27 @@
                 <div class="static-line-label">
                   ARCHITECT (Signed and Sealed Over Printed Name)
                 </div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.designProfessional.architectName }}</div>
               </div>
               <div class="static-field-group">
                 <div class="static-line-label">Date</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.designProfessional.date }}</div>
               </div>
               <div class="static-field-group">
                 <div class="static-line-label">Address</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.designProfessional.address }}</div>
               </div>
               <v-row dense>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">IAPOA No.</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.iapoaNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Validity</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.iapoaValidity }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -364,13 +373,13 @@
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">PRC No.</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.prcNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Validity</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.prcValidity }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -378,13 +387,13 @@
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">PTR No</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.ptrNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Date Issued</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.ptrDateIssued }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -392,13 +401,13 @@
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Issued at</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.issuedAt }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">TIN</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.designProfessional.tin }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -419,27 +428,27 @@
                 <div class="static-line-label">
                   ENGINEER (Signed and Sealed Over Printed Name)
                 </div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.supervisorArchitectural.architectName }}</div>
               </div>
               <div class="static-field-group">
                 <div class="static-line-label">Date</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.supervisorArchitectural.date }}</div>
               </div>
               <div class="static-field-group">
                 <div class="static-line-label">Address</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.supervisorArchitectural.address }}</div>
               </div>
               <v-row dense>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">APO No.</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.iapoaNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Validity</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.iapoaValidity }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -447,13 +456,13 @@
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">PRC No.</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.prcNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Validity</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.prcValidity }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -461,13 +470,13 @@
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">PTR No</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.ptrNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Date Issued</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.ptrDateIssued }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -475,13 +484,13 @@
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Issued at</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.issuedAt }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">TIN</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.supervisorArchitectural.tin }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -498,48 +507,38 @@
             >
             <v-card-subtitle>BUILDING OWNER</v-card-subtitle>
             <v-card-text>
-              <v-text-field
-                label="(Signature Over Printed Name)"
-                v-model="form.buildingOwner.signatureName"
-                class="plain-input"
-                hide-details
-              />
-              <v-text-field
-                label="Date"
-                v-model="form.buildingOwner.date"
-                class="plain-input"
-                hide-details
-              />
-              <v-text-field
-                label="Address"
-                v-model="form.buildingOwner.address"
-                class="plain-input"
-                hide-details
-              />
-              <v-row>
+              <div class="static-field-group">
+                <div class="static-line-label">
+                  (Signature Over Printed Name)
+                </div>
+                <div class="static-line">{{ form.buildingOwner.signatureName }}</div>
+              </div>
+              <div class="static-field-group">
+                <div class="static-line-label">Date</div>
+                <div class="static-line">{{ form.buildingOwner.date }}</div>
+              </div>
+              <div class="static-field-group">
+                <div class="static-line-label">Address</div>
+                <div class="static-line">{{ form.buildingOwner.address }}</div>
+              </div>
+              <v-row dense>
                 <v-col cols="6">
-                  <v-text-field
-                    label="C.T.C. No."
-                    v-model="form.buildingOwner.ctcNo"
-                    class="plain-input"
-                    hide-details
-                  />
+                  <div class="static-field-group">
+                    <div class="static-line-label">C.T.C. No.</div>
+                    <div class="static-line">{{ form.buildingOwner.ctcNo }}</div>
+                  </div>
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field
-                    label="Date Issued"
-                    v-model="form.buildingOwner.dateIssued"
-                    class="plain-input"
-                    hide-details
-                  />
+                  <div class="static-field-group">
+                    <div class="static-line-label">Date Issued</div>
+                    <div class="static-line">{{ form.buildingOwner.dateIssued }}</div>
+                  </div>
                 </v-col>
               </v-row>
-              <v-text-field
-                label="Place Issued"
-                v-model="form.buildingOwner.placeIssued"
-                class="plain-input"
-                hide-details
-              />
+              <div class="static-field-group">
+                <div class="static-line-label">Place Issued</div>
+                <div class="static-line">{{ form.buildingOwner.placeIssued }}</div>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -554,33 +553,33 @@
                 <div class="static-line-label">
                   (Signature Over Printed Name)
                 </div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.lotOwner.signatureName }}</div>
               </div>
               <div class="static-field-group">
                 <div class="static-line-label">Date</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.lotOwner.date }}</div>
               </div>
               <div class="static-field-group">
                 <div class="static-line-label">Address</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.lotOwner.address }}</div>
               </div>
               <v-row dense>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">C.T.C. No.</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.lotOwner.ctcNo }}</div>
                   </div>
                 </v-col>
                 <v-col cols="6">
                   <div class="static-field-group">
                     <div class="static-line-label">Date Issued</div>
-                    <div class="static-line"></div>
+                    <div class="static-line">{{ form.lotOwner.dateIssued }}</div>
                   </div>
                 </v-col>
               </v-row>
               <div class="static-field-group">
                 <div class="static-line-label">Place Issued</div>
-                <div class="static-line"></div>
+                <div class="static-line">{{ form.lotOwner.placeIssued }}</div>
               </div>
             </v-card-text>
           </v-card>
@@ -599,9 +598,28 @@
           <v-row no-gutters class="border-bottom-dark">
             <v-col cols="6" class="py-2 pl-4 pr-2 border-right-dark">
               <span class="font-weight-bold">RECEIVED BY:</span>
+              <!-- This remains a v-text-field as it needs to be interactive -->
+              <v-text-field
+                v-model="form.box7ReceivedBy"
+                label="Received By"
+                variant="plain"
+                density="compact"
+                hide-details
+                class="plain-input"
+              />
             </v-col>
             <v-col cols="6" class="py-2 pl-4">
               <span class="font-weight-bold">DATE:</span>
+              <!-- This remains a v-text-field as it needs to be interactive -->
+              <v-text-field
+                v-model="form.box7DateReceived"
+                label="Date"
+                type="date"
+                variant="plain"
+                density="compact"
+                hide-details
+                class="plain-input"
+              />
             </v-col>
           </v-row>
 
@@ -775,12 +793,29 @@
 
           <h4 class="text-subtitle-1 mt-4 mb-2">PERMIT ISSUED BY:</h4>
           <div class="static-field-group text-center">
-            <div class="static-line-label">ALEXANDER N. CANING</div>
-            <div class="static-line"></div>
+            <!-- This remains a v-text-field as it needs to be interactive -->
+            <v-text-field
+              label="ALEXANDER N. CANING"
+              v-model="form.permitIssuedBy.name"
+              clearable
+              variant="plain"
+              density="compact"
+              hide-details
+              class="plain-input"
+            />
             <div class="text-caption mt-1">BUILDING OFFICIAL</div>
             <div class="text-caption">(Signature Over Printed Name)</div>
-            <div class="static-line-label">Date</div>
-            <div class="static-line"></div>
+            <!-- This remains a v-text-field as it needs to be interactive -->
+            <v-text-field
+              label="Date"
+              v-model="form.permitIssuedBy.date"
+              type="date"
+              clearable
+              variant="plain"
+              density="compact"
+              hide-details
+              class="plain-input"
+            />
           </div>
         </v-card-text>
       </v-card>
@@ -795,12 +830,27 @@
           >
             Reset Form
           </v-btn>
-          <v-btn color="blue-darken-3" @click="submitForm" :disabled="!valid">
+          <v-btn color="blue-darken-3" @click="submitForm">
             Submit Application
           </v-btn>
         </v-col>
       </v-row>
     </v-form>
+
+    <v-snackbar
+      v-model="showMessage"
+      :timeout="3000"
+      :color="messageColor"
+      top
+      right
+    >
+      {{ statusMessage }}
+      <template v-slot:actions>
+        <v-btn color="white" variant="text" @click="showMessage = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -808,7 +858,10 @@
   export default {
     data() {
       return {
-        valid: false, // Overall form validity
+        valid: false, // Overall form validity - still used for highlighting, but not blocking submit
+        showMessage: false, // Controls visibility of the snackbar message
+        statusMessage: '', // The message to display in the snackbar
+        messageColor: '', // Color of the snackbar (e.g., 'success', 'error')
         form: {
           lastName: '',
           firstName: '',
@@ -834,7 +887,7 @@
           },
           scope: '',
           scopeOtherDetails: '',
-          natureOfCivilStructuralWorks: { // Renamed from architecturalFacilities
+          natureOfCivilStructuralWorks: {
             staking: false,
             excavation: false,
             soilStabilization: false,
@@ -852,6 +905,7 @@
             others: false,
             othersDetails: '',
           },
+          // Added these for data consistency with other forms, if not explicitly removed by user
           siteOccupancy: {
             buildingFootPrint: '',
             imperviousSurfaceArea: '',
@@ -882,11 +936,11 @@
             issuedAt: '',
             tin: '',
           },
-          supervisorArchitectural: { // This would ideally be supervisorCivilStructural
-            architectName: '', // Retaining architectName for now as fields are generic
+          supervisorArchitectural: { // Renamed from supervisorCivilStructural to match frontend text
+            architectName: '', // Retaining architectName as field text suggests architect/engineer
             date: '',
             address: '',
-            iapoaNo: '',
+            iapoaNo: '', // Assuming APO No. in frontend maps to this in backend for consistency
             iapoaValidity: '',
             prcNo: '',
             prcValidity: '',
@@ -911,12 +965,29 @@
             dateIssued: '',
             placeIssued: '',
           },
-          civilStructuralDocuments: { // New data properties for BOX 7 (Civil Structural)
+          civilStructuralDocuments: {
             designsComputations: false,
             billOfMaterials: false,
             costEstimates: false,
             others: false,
             othersDetails: '',
+          },
+          // Added for Prepared By in "Nature of Civil/Structural Works" section
+          buildingDetails: {
+            numStorey: '',
+            totalArea: '',
+            proposedDateOfConstruction: '',
+            totalCostOfInstallation: '',
+            expectedDateOfCompletion: '',
+            preparedBy: '', // Added this line
+          },
+          // New fields for data in Box 7 Received By and Date Received
+          box7ReceivedBy: '',
+          box7DateReceived: '',
+          // New fields for data in Box 9 Permit Issued By
+          permitIssuedBy: {
+            name: '',
+            date: '',
           },
         },
         rules: {
@@ -948,7 +1019,7 @@
             }
             return true;
           },
-          requiredIfCivilStructuralOthersDocuments: value => { // New rule for BOX 7 others
+          requiredIfCivilStructuralOthersDocuments: value => {
             if (this.form.civilStructuralDocuments.others) {
               return !!value || 'Please specify details for "OTHERS" civil/structural documents.';
             }
@@ -962,70 +1033,270 @@
         return this.form.scope === 'othersScope';
       },
     },
+    watch: {
+      form: {
+        handler(newValue) {
+          localStorage.setItem('structuralPermitForm', JSON.stringify(newValue));
+          console.log('Form data saved to localStorage.');
+        },
+        deep: true, // Watch for changes inside nested objects
+      },
+    },
+    mounted() {
+      // Attempt to load unsaved draft from local storage first
+      this.loadDraftFromLocalStorage();
+
+      // If, after attempting to load a draft, the form is still empty (meaning no draft was found or loaded),
+      // then load the last submitted data from the server.
+      if (this.isFormEmpty(this.form)) {
+        this.loadFormData(); // This method now focuses on loading from the server
+      }
+    },
     methods: {
-      async submitForm() {
-        const { valid } = await this.$refs.form.validate();
-        if (valid) {
-          console.log('Form is valid and submitted:', this.form);
-          // Add your form submission logic here (e.g., API call)
-        } else {
-          console.log('Form is invalid. Please check the fields.');
+      loadDraftFromLocalStorage() {
+        const savedForm = localStorage.getItem('structuralPermitForm');
+        if (savedForm) {
+          try {
+            const parsedForm = JSON.parse(savedForm);
+            // Only load if the parsed form is not empty or default
+            if (Object.keys(parsedForm).length > 0 && !this.isFormEmpty(parsedForm)) {
+              this.form = parsedForm;
+              this.statusMessage = 'Draft data loaded from your last session.';
+              this.messageColor = 'info';
+              this.showMessage = true;
+            }
+          } catch (e) {
+            console.error("Error parsing localStorage data:", e);
+            localStorage.removeItem('structuralPermitForm'); // Clear bad data
+          }
         }
+      },
+      isFormEmpty(form) {
+        // Create a comparison object based on the initial state
+        const initialData = this.$options.data.apply(this);
+        const defaultForm = initialData.form;
+        
+        // Deep compare only the fields that are expected to be filled by user
+        // and ignore computed properties or initial UI states
+        const fieldsToCheck = [
+          'lastName', 'firstName', 'mi', 'tin', 'address', 'zip', 'phone', 'email',
+          'location', 'scope', 'scopeOtherDetails', 'natureOfCivilStructuralWorks',
+          'siteOccupancy', 'fireCodeConformance', 'designProfessional',
+          'supervisorArchitectural', 'buildingOwner', 'lotOwner',
+          'civilStructuralDocuments', 'box7ReceivedBy', 'box7DateReceived', 'permitIssuedBy'
+        ];
+
+        for (const field of fieldsToCheck) {
+            if (JSON.stringify(form[field]) !== JSON.stringify(defaultForm[field])) {
+                return false; // If any field is different, form is not empty
+            }
+        }
+        return true; // All user-fillable fields match default, so it's empty
+      },
+      async loadFormData() {
+        try {
+          const response = await fetch('http://localhost/buildingpermitapplication/src/document/structural-backend/structural.php', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            const loadedData = result.data;
+            // Map the flat database structure back to your nested form object
+            this.form.lastName = loadedData.last_name || '';
+            this.form.firstName = loadedData.first_name || '';
+            this.form.mi = loadedData.middle_initial || '';
+            this.form.tin = loadedData.tin || '';
+            this.form.address.no = loadedData.owner_address_no || '';
+            this.form.address.street = loadedData.owner_address_street || '';
+            this.form.address.barangay = loadedData.owner_address_barangay || '';
+            this.form.address.city = loadedData.owner_address_city || '';
+            this.form.zip = loadedData.zip_code || '';
+            this.form.phone = loadedData.phone_number || '';
+            this.form.email = loadedData.email_address || '';
+
+            this.form.location.lotNo = loadedData.location_lot_no || '';
+            this.form.location.blkNo = loadedData.location_blk_no || '';
+            this.form.location.tctNo = loadedData.location_tct_no || '';
+            this.form.location.taxDecNo = loadedData.location_tax_dec_no || '';
+            this.form.location.street = loadedData.location_street || '';
+            this.form.location.barangay = loadedData.location_barangay || '';
+            this.form.location.city = loadedData.location_city || '';
+
+            this.form.scope = loadedData.scope_of_work || '';
+            this.form.scopeOtherDetails = loadedData.scope_other_details || '';
+
+            // Nature of Civil/Structural Works mapping
+            this.form.natureOfCivilStructuralWorks.staking = !!parseInt(loadedData.nature_staking);
+            this.form.natureOfCivilStructuralWorks.excavation = !!parseInt(loadedData.nature_excavation);
+            this.form.natureOfCivilStructuralWorks.soilStabilization = !!parseInt(loadedData.nature_soil_stabilization);
+            this.form.natureOfCivilStructuralWorks.pilingWorks = !!parseInt(loadedData.nature_piling_works);
+            this.form.natureOfCivilStructuralWorks.foundation = !!parseInt(loadedData.nature_foundation);
+            this.form.natureOfCivilStructuralWorks.erectionLifting = !!parseInt(loadedData.nature_erection_lifting);
+            this.form.natureOfCivilStructuralWorks.concreteFraming = !!parseInt(loadedData.nature_concrete_framing);
+            this.form.natureOfCivilStructuralWorks.structuralSteelFraming = !!parseInt(loadedData.nature_structural_steel_framing);
+            this.form.natureOfCivilStructuralWorks.slabs = !!parseInt(loadedData.nature_slabs);
+            this.form.natureOfCivilStructuralWorks.walls = !!parseInt(loadedData.nature_walls);
+            this.form.natureOfCivilStructuralWorks.prestressWorks = !!parseInt(loadedData.nature_prestress_works);
+            this.form.natureOfCivilStructuralWorks.materialTesting = !!parseInt(loadedData.nature_material_testing);
+            this.form.natureOfCivilStructuralWorks.steelTowers = !!parseInt(loadedData.nature_steel_towers);
+            this.form.natureOfCivilStructuralWorks.tanks = !!parseInt(loadedData.nature_tanks);
+            this.form.natureOfCivilStructuralWorks.others = !!parseInt(loadedData.nature_others);
+            this.form.natureOfCivilStructuralWorks.othersDetails = loadedData.nature_others_details || '';
+
+            // Site Occupancy
+            this.form.siteOccupancy.buildingFootPrint = loadedData.site_building_foot_print || '';
+            this.form.siteOccupancy.imperviousSurfaceArea = loadedData.site_impervious_surface_area || '';
+            this.form.siteOccupancy.unpavedSurfaceArea = loadedData.site_unpaved_surface_area || '';
+            this.form.siteOccupancy.others = loadedData.site_others || '';
+
+            // Fire Code Conformance
+            this.form.fireCodeConformance.numWidthExitDoors = !!parseInt(loadedData.fire_num_width_exit_doors);
+            this.form.fireCodeConformance.widthCorridors = !!parseInt(loadedData.fire_width_corridors);
+            this.form.fireCodeConformance.distanceFireExits = !!parseInt(loadedData.fire_distance_fire_exits);
+            this.form.fireCodeConformance.accessPublicStreets = !!parseInt(loadedData.fire_access_public_streets);
+            this.form.fireCodeConformance.fireWalls = !!parseInt(loadedData.fire_walls);
+            this.form.fireCodeConformance.fireFightingSafety = !!parseInt(loadedData.fire_fighting_safety);
+            this.form.fireCodeConformance.smokeDetectors = !!parseInt(loadedData.fire_smoke_detectors);
+            this.form.fireCodeConformance.emergencyLights = !!parseInt(loadedData.fire_emergency_lights);
+            this.form.fireCodeConformance.others = !!parseInt(loadedData.fire_others);
+
+            // Box 3: Design Professional
+            this.form.designProfessional.architectName = loadedData.design_prof_architect_name || '';
+            this.form.designProfessional.date = loadedData.design_prof_date || '';
+            this.form.designProfessional.address = loadedData.design_prof_address || '';
+            this.form.designProfessional.iapoaNo = loadedData.design_prof_iapoa_no || '';
+            this.form.designProfessional.iapoaValidity = loadedData.design_prof_iapoa_validity || '';
+            this.form.designProfessional.prcNo = loadedData.design_prof_prc_no || '';
+            this.form.designProfessional.prcValidity = loadedData.design_prof_prc_validity || '';
+            this.form.designProfessional.ptrNo = loadedData.design_prof_ptr_no || '';
+            this.form.designProfessional.ptrDateIssued = loadedData.design_prof_ptr_date_issued || '';
+            this.form.designProfessional.issuedAt = loadedData.design_prof_issued_at || '';
+            this.form.designProfessional.tin = loadedData.design_prof_tin || '';
+
+            // Box 4: Supervisor / In-Charge of Architectural Works
+            this.form.supervisorArchitectural.architectName = loadedData.supervisor_architectural_name || '';
+            this.form.supervisorArchitectural.date = loadedData.supervisor_architectural_date || '';
+            this.form.supervisorArchitectural.address = loadedData.supervisor_architectural_address || '';
+            this.form.supervisorArchitectural.iapoaNo = loadedData.supervisor_architectural_iapoa_no || '';
+            this.form.supervisorArchitectural.iapoaValidity = loadedData.supervisor_architectural_iapoa_validity || '';
+            this.form.supervisorArchitectural.prcNo = loadedData.supervisor_architectural_prc_no || '';
+            this.form.supervisorArchitectural.prcValidity = loadedData.supervisor_architectural_prc_validity || '';
+            this.form.supervisorArchitectural.ptrNo = loadedData.supervisor_architectural_ptr_no || '';
+            this.form.supervisorArchitectural.ptrDateIssued = loadedData.supervisor_architectural_ptr_date_issued || '';
+            this.form.supervisorArchitectural.issuedAt = loadedData.supervisor_architectural_issued_at || '';
+            this.form.supervisorArchitectural.tin = loadedData.supervisor_architectural_tin || '';
+
+            // Box 5: Building Owner
+            this.form.buildingOwner.signatureName = loadedData.building_owner_signature_name || '';
+            this.form.buildingOwner.date = loadedData.building_owner_date || '';
+            this.form.buildingOwner.address = loadedData.building_owner_address || '';
+            this.form.buildingOwner.ctcNo = loadedData.building_owner_ctc_no || '';
+            this.form.buildingOwner.dateIssued = loadedData.building_owner_date_issued || '';
+            this.form.buildingOwner.placeIssued = loadedData.building_owner_place_issued || '';
+
+            // Box 6: Lot Owner
+            this.form.lotOwner.signatureName = loadedData.lot_owner_signature_name || '';
+            this.form.lotOwner.date = loadedData.lot_owner_date || '';
+            this.form.lotOwner.address = loadedData.lot_owner_address || '';
+            this.form.lotOwner.ctcNo = loadedData.lot_owner_ctc_no || '';
+            this.form.lotOwner.dateIssued = loadedData.lot_owner_date_issued || '';
+            this.form.lotOwner.placeIssued = loadedData.lot_owner_place_issued || '';
+
+            // Box 7: Civil/Structural Documents
+            this.form.civilStructuralDocuments.designsComputations = !!parseInt(loadedData.doc_designs_computations);
+            this.form.civilStructuralDocuments.billOfMaterials = !!parseInt(loadedData.doc_bill_of_materials);
+            this.form.civilStructuralDocuments.costEstimates = !!parseInt(loadedData.doc_cost_estimates);
+            this.form.civilStructuralDocuments.others = !!parseInt(loadedData.doc_others);
+            this.form.civilStructuralDocuments.othersDetails = loadedData.doc_others_details || '';
+            this.form.box7ReceivedBy = loadedData.box7_received_by || '';
+            this.form.box7DateReceived = loadedData.box7_date_received || '';
+
+            // Prepared By (from nature of civil/structural works section)
+            this.form.buildingDetails.preparedBy = loadedData.building_prepared_by || '';
+
+
+            // Box 9: Permit Issued By
+            this.form.permitIssuedBy.name = loadedData.permit_issued_by_name || '';
+            this.form.permitIssuedBy.date = loadedData.permit_issued_by_date || '';
+
+            this.statusMessage = 'Previous submitted data loaded successfully.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          } else {
+            console.log('No previous submitted data found from server or error loading:', result.message);
+            this.statusMessage = 'No previous submitted data found on server.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          }
+        } catch (error) {
+          console.error('Error loading form data from server:', error);
+          this.statusMessage = 'Error loading previous submitted data from server.';
+          this.messageColor = 'error';
+          this.showMessage = true;
+        }
+      },
+      async submitForm() {
+        // We will no longer block submission based on client-side validation results.
+        // Instead, we perform validation to highlight issues, but proceed with submission.
+        const { valid } = await this.$refs.form.validate(); // This still triggers visual feedback
+        
+        // You can add a warning message here if the form is not valid
+        if (!valid) {
+            this.statusMessage = 'Form has incomplete or invalid fields, but will attempt submission.';
+            this.messageColor = 'warning';
+            this.showMessage = true;
+            console.log('Form is invalid according to frontend rules, but submitting anyway.');
+        }
+
+
+        // Proceed with submission regardless of frontend validation status
+        try {
+            const response = await fetch('http://localhost/buildingpermitapplication/src/document/structural-backend/structural.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(this.form), // Send your form data as JSON
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              this.statusMessage = result.message;
+              this.messageColor = 'success';
+              this.showMessage = true;
+              console.log('Form submitted successfully:', result.message);
+              localStorage.removeItem('structuralPermitForm'); // Clear local storage on successful submission
+              this.resetForm(); // Reset form after successful submission
+            } else {
+              this.statusMessage = 'Submission failed: ' + result.message;
+              this.messageColor = 'error';
+              this.showMessage = true;
+              console.error('Form submission failed:', result.message);
+            }
+          } catch (error) {
+            this.statusMessage = 'An error occurred during submission. Please try again.';
+            this.messageColor = 'error';
+            this.showMessage = true;
+            console.error('Error during form submission:', error);
+          }
       },
       resetForm() {
         this.$refs.form.reset();
         this.$refs.form.resetValidation();
-        this.form.scopeOtherDetails = '';
-        this.form.natureOfCivilStructuralWorks = {
-          staking: false,
-          excavation: false,
-          soilStabilization: false,
-          pilingWorks: false,
-          foundation: false,
-          erectionLifting: false,
-          concreteFraming: false,
-          structuralSteelFraming: false,
-          slabs: false,
-          walls: false,
-          prestressWorks: false,
-          materialTesting: false,
-          steelTowers: false,
-          tanks: false,
-          others: false,
-          othersDetails: '',
-        };
-        this.form.siteOccupancy = {
-          buildingFootPrint: '',
-          imperviousSurfaceArea: '',
-          unpavedSurfaceArea: '',
-          others: '',
-        };
-        this.form.fireCodeConformance = {
-          numWidthExitDoors: false,
-          widthCorridors: false,
-          distanceFireExits: false,
-          accessPublicStreets: false,
-          fireWalls: false,
-          fireFightingSafety: false,
-          smokeDetectors: false,
-          emergencyLights: false,
-          others: false,
-        };
-        this.form.buildingOwner = {
-          signatureName: '',
-          date: '',
-          address: '',
-          ctcNo: '',
-          dateIssued: '',
-          placeIssued: '',
-        };
-        this.form.civilStructuralDocuments = { // Reset new section
-            designsComputations: false,
-            billOfMaterials: false,
-            costEstimates: false,
-            others: false,
-            othersDetails: '',
-        };
+
+        // Deep reset for nested objects
+        const initialData = this.$options.data.apply(this);
+        this.form = JSON.parse(JSON.stringify(initialData.form)); // Deep copy initial state
+
+        localStorage.removeItem('structuralPermitForm'); // Clear local storage on reset
+        this.statusMessage = 'Form has been reset.';
+        this.messageColor = 'info';
+        this.showMessage = true;
       },
     },
   };
@@ -1041,33 +1312,89 @@
     padding-bottom: 0 !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
-    border-bottom: 1px solid #ccc; /* Underline for fields */
   }
 
-  /* Remove default Vuetify input underline/border for plain variant */
+  /* Specific styling for plain variant text fields to ensure consistent appearance */
   .plain-input.v-text-field .v-input__control {
-    border-bottom: none !important;
+    min-height: unset !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  .plain-input.v-text-field .v-field__overlay {
-    display: none;
+  .plain-input.v-text-field .v-field {
+    padding: 0 !important; /* Remove all internal padding from v-field */
+    border-bottom: 1px solid #ccc !important; /* Keep the desired underline */
+    border-radius: 0 !important; /* No rounded corners */
+    background-color: transparent !important; /* No background */
+    box-shadow: none !important; /* No shadow */
   }
 
-  /* New styles for static display fields to mimic screenshot */
-  .static-field-group {
-    margin-bottom: 16px; /* Spacing between static field groups */
+  /* Crucial: Hide all parts of the default Vuetify field appearance */
+  .plain-input.v-text-field .v-field__overlay,
+  .plain-input.v-text-field .v-field__outline,
+  .plain-input.v-text-field .v-field__details,
+  .plain-input.v-text-field .v-field__append-inner,
+  .plain-input.v-text-field .v-field__prepend-inner,
+  .plain-input.v-text-field .v-field__clearable {
+    display: none !important;
   }
 
-  .static-line-label {
-    font-size: 0.75rem; /* Smaller font for labels, similar to screenshot */
-    color: rgba(0, 0, 0, 0.6); /* Lighter color for labels */
-    margin-bottom: 4px; /* Space between label and line */
+  /* Ensure the input itself takes full width and has desired text alignment */
+  .plain-input.v-text-field .v-field__input {
+    width: 100% !important; /* Make sure it spans the full width */
+    text-align: left !important;
+    padding: 0 0 2px 0 !important; /* Only bottom padding to match line aesthetic */
+    min-height: unset !important;
+    line-height: normal !important; /* Prevent extra line height */
+    height: auto !important; /* Adjust height to content */
+    opacity: 1 !important; /* Ensure text is always visible */
   }
 
-  .static-line {
-    border-bottom: 1px solid #ccc; /* The underline */
-    padding-bottom: 2px; /* Space between text and line */
-    min-height: 24px; /* Ensure a minimum height for the line */
+  /* Style the label to always be above the line and appear static */
+  .plain-input.v-text-field .v-label {
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    position: relative !important;
+    opacity: 0.8 !important; /* Slightly more opaque than 0.6 for better readability */
+    font-size: 0.75rem !important;
+    color: rgba(0, 0, 0, 0.8) !important; /* Darker color for labels */
+    margin-bottom: 4px !important; /* Space between label and line */
+    pointer-events: none !important; /* Prevent label from capturing clicks */
+  }
+
+  /* Remove hover/focus effects */
+  .plain-input.v-text-field .v-field:hover,
+  .plain-input.v-text-field .v-field.v-field--active {
+    background-color: transparent !important;
+    cursor: text !important; /* Keep text cursor if editable */
+  }
+  .plain-input.v-text-field .v-field:before,
+  .plain-input.v-text-field .v-field:after {
+      display: none !important; /* Hide Vuetify's default before/after pseudo elements for borders/highlights */
+  }
+
+  /* For text fields within static-field-group, especially for signature lines */
+  .static-field-group .v-text-field .v-label {
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      position: relative !important;
+      opacity: 0.8 !important;
+      font-size: 0.75rem !important;
+      color: rgba(0, 0, 0, 0.8) !important;
+      margin-bottom: 4px !important;
+      pointer-events: none !important;
+  }
+
+  .static-field-group .v-text-field .v-field__input {
+      padding-top: 0 !important;
+      padding-bottom: 2px !important; /* Small padding above line */
+      text-align: center !important; /* Center text if it's acting as a signature line */
+  }
+
+  .static-field-group .v-text-field .v-field {
+      border-bottom: 1px solid #ccc !important;
   }
 
   /* Styles for BOX 8 Progress Flow Table */

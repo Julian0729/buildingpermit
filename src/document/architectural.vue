@@ -1134,6 +1134,26 @@ const tryLoadFromLocalStorage = () => {
   }
 };
 
+
+onMounted(async () => {
+  console.log("OnMounted hook called. unifiedApplicationNumber initially:", unifiedApplicationNumber.value); // CHECK THIS ONE
+  // ...
+  let uanFromRoute = route.params.applicationNumber; // CHECK THIS ONE
+  let uanFromStorage = localStorage.getItem('unifiedApplicationNumber'); // CHECK THIS ONE
+  unifiedApplicationNumber.value = uanFromRoute || uanFromStorage;
+  console.log(`unifiedApplicationNumber resolved to: ${unifiedApplicationNumber.value}`); // THIS IS THE MOST IMPORTANT ONE
+  // ...
+  if (unifiedApplicationNumber.value) {
+    console.log(`Attempting to load data for application number: ${unifiedApplicationNumber.value}`);
+    const url = `http://localhost/buildingpermitapplication/src/pages/Architect-Backend/architect.php?unified_application_number=${unifiedApplicationNumber.value}`;
+    console.log("Full GET URL being used:", url);
+    // ...
+  } else {
+    console.log("No unified application number found. Checking local storage."); // <--- If you see this, that's the problem
+    tryLoadFromLocalStorage();
+  }
+});
+
 // Consolidated onMounted hook for proper initialization
 onMounted(async () => {
   console.log("OnMounted hook called. unifiedApplicationNumber:", unifiedApplicationNumber.value);

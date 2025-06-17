@@ -49,17 +49,15 @@ const router = createRouter({
     },
 
     {
-      path: "/sanitary/:applicationNumber?", // Added dynamic parameter
+      path: "/sanitary", // Added dynamic parameter
       name: "sanitary",
       component: () => import("@/document/sanitary.vue"),
     },
-    {
-      // THIS IS THE KEY FIX FOR ARCHITECTURAL
-      path: "/architectural/:applicationNumber?", // <-- IMPORTANT: Added dynamic parameter
-      name: "architectural",
-      component: () => import("@/document/architectural.vue"),
-    },
-
+{
+  path: "/architectural/:applicationNumber?",
+  name: "architectural",
+  component: () => import("@/document/architectural.vue"),
+},
     {
       path: "/structural/:applicationNumber?", // Added dynamic parameter
       name: "structural",

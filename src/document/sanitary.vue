@@ -281,6 +281,16 @@
                 density="compact"
               />
             </v-col>
+            <v-col cols="6">
+              <v-text-field
+                v-if="form.fixtures.othersFixture.selected"
+                v-model="form.fixtures.othersFixture.details"
+                label="Specify Other Fixture Details"
+                :rules="[rules.requiredIfOthersFixtureSelected]"
+                clearable
+                density="compact"
+              />
+            </v-col>
           </v-row>
 
           <h4 class="mt-6 mb-4">SYSTEM TYPE</h4>
@@ -972,12 +982,27 @@
           >
             Reset Form
           </v-btn>
-          <v-btn color="blue-darken-3" @click="submitForm" :disabled="!valid">
+          <v-btn color="blue-darken-3" @click="submitForm">
             Submit Application
           </v-btn>
         </v-col>
       </v-row>
     </v-form>
+
+    <v-snackbar
+      v-model="showMessage"
+      :timeout="3000"
+      :color="messageColor"
+      top
+      right
+    >
+      {{ statusMessage }}
+      <template v-slot:actions>
+        <v-btn color="white" variant="text" @click="showMessage = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -999,7 +1024,10 @@
       });
 
       return {
-        valid: false, // Overall form validity
+        valid: false, // Overall form validity - still used for highlighting, but not blocking submit
+        showMessage: false, // Controls visibility of the snackbar message
+        statusMessage: '', // The message to display in the snackbar
+        messageColor: '', // Color of the snackbar (e.g., 'success', 'error')
         form: {
           lastName: '',
           firstName: '',
@@ -1062,51 +1090,48 @@
             others: false,
             othersDetails: '',
           },
-          box4Entries: [ //
-            { label: 'Application Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-            { label: 'Permit Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-            { label: 'Inspection Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-            { label: 'Fines/Penalties', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-            { label: 'Other Charges', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
+          box4Entries: [
+            { label: 'Application Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' },
+            { label: 'Permit Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' },
+            { label: 'Inspection Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' },
+            { label: 'Fines/Penalties', amountDue: '', assessedBy: '', orNo: '', datePaid: '' },
+            { label: 'Other Charges', amountDue: '', assessedBy: '', orNo: '', datePaid: '' },
           ],
-          box5Entries: [ //
-            { label: 'NOTED', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-            { label: 'CHIEF-PROCESSING DIVISION/SECTION', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-            { label: 'RECEIVING AND RECORDING', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-            { label: 'GEODETIC (LINE AND GRADE)', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-            { label: 'SANITARY', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
+          box5Entries: [
+            { label: 'NOTED', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' },
+            { label: 'CHIEF-PROCESSING DIVISION/SECTION', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' },
+            { label: 'RECEIVING AND RECORDING', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' },
+            { label: 'GEODETIC (LINE AND GRADE)', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' },
+            { label: 'SANITARY', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' },
           ],
-          // NEW: Box 6 data
-          box6: { //
-            date: '', // This will be static text
-            engineerName: '', // This will be static text
-            address: '', //
-            prcNo: '', //
-            validity: '', //
-            ptrNo: '', //
-            dateIssued: '', //
-            issuedAt: '', //
-            tin: '', //
+          box6: {
+            engineerName: '',
+            date: '',
+            address: '',
+            prcNo: '',
+            validity: '',
+            ptrNo: '',
+            dateIssued: '',
+            issuedAt: '',
+            tin: '',
           },
-          // NEW: Box 7 data
-          box7: { //
-            date: '', // This will be static text
-            engineerName: '', // This will be static text
-            address: '', //
-            prcNo: '', //
-            validity: '', //
-            ptrNo: '', //
-            dateIssued: '', //
-            issuedAt: '', //
-            tin: '', //
+          box7: {
+            engineerName: '',
+            date: '',
+            address: '',
+            prcNo: '',
+            validity: '',
+            ptrNo: '',
+            dateIssued: '',
+            issuedAt: '',
+            tin: '',
           },
-          // NEW: Box 8 data
-          box8: { //
-            signedName: '', // This will be static text
-            date: '', // This will be static text
-            ctcNo: '', //
-            dateIssued: '', //
-            placeIssued: '', //
+          box8: {
+            signedName: '',
+            date: '',
+            ctcNo: '',
+            dateIssued: '',
+            placeIssued: '',
           },
         },
         rules: {
@@ -1141,6 +1166,12 @@
           requiredIfBuildingDocsOthers: value => {
             if (this.form.buildingDocuments.others) {
               return !!value || 'Please specify details for "OTHERS (Specify)".';
+            }
+            return true;
+          },
+          requiredIfOthersFixtureSelected: value => {
+            if (this.form.fixtures.othersFixture.selected) {
+              return !!value || 'Please specify details for "OTHERS" fixture.';
             }
             return true;
           },
@@ -1184,134 +1215,289 @@
       totalFixtures() {
         let total = 0;
         for (const key in this.form.fixtures) {
-          const qty = Number(this.form.fixtures[key].qty);
-          if (!isNaN(qty)) {
-            total += qty;
+          if (this.form.fixtures[key].selected && this.form.fixtures[key].qty !== null) {
+            const qty = Number(this.form.fixtures[key].qty);
+            if (!isNaN(qty)) {
+              total += qty;
+            }
           }
         }
         return total;
       },
     },
+    watch: {
+      form: {
+        handler(newValue) {
+          localStorage.setItem('sanitaryPermitForm', JSON.stringify(newValue));
+          console.log('Form data saved to localStorage.');
+        },
+        deep: true, // Watch for changes inside nested objects
+      },
+    },
+    mounted() {
+      // Attempt to load unsaved draft from local storage first
+      this.loadDraftFromLocalStorage();
+
+      // If, after attempting to load a draft, the form is still empty (meaning no draft was found or loaded),
+      // then load the last submitted data from the server.
+      if (this.isFormEmpty(this.form)) {
+        this.loadFormData(); // This method now focuses on loading from the server
+      }
+    },
     methods: {
-      async submitForm() {
-        const { valid } = await this.$refs.form.validate();
-        if (valid) {
-          console.log('Form is valid and submitted:', this.form);
-          // Add your form submission logic here (e.g., API call)
-        } else {
-          console.log('Form is invalid. Please check the fields.');
+      loadDraftFromLocalStorage() {
+        const savedForm = localStorage.getItem('sanitaryPermitForm');
+        if (savedForm) {
+          try {
+            const parsedForm = JSON.parse(savedForm);
+            // Only load if the parsed form is not empty or default
+            if (Object.keys(parsedForm).length > 0 && !this.isFormEmpty(parsedForm)) {
+              this.form = parsedForm;
+              this.statusMessage = 'Draft data loaded from your last session.';
+              this.messageColor = 'info';
+              this.showMessage = true;
+            }
+          } catch (e) {
+            console.error("Error parsing localStorage data:", e);
+            localStorage.removeItem('sanitaryPermitForm'); // Clear bad data
+          }
         }
+      },
+      isFormEmpty(form) {
+        // Create a comparison object based on the initial state
+        const initialData = this.$options.data.apply(this);
+        const defaultForm = initialData.form;
+        
+        // Deep compare only the fields that are expected to be filled by user
+        // and ignore computed properties or initial UI states
+        const fieldsToCheck = [
+          'lastName', 'firstName', 'mi', 'tin', 'address', 'zip', 'phone', 'email',
+          'location', 'scope', 'scopeOtherDetails', 'fixtures', 'systemType',
+          'waterSupply', 'systemDisposal', 'buildingDetails', 'buildingDocuments',
+          'box4Entries', 'box5Entries', 'box6', 'box7', 'box8'
+        ];
+
+        for (const field of fieldsToCheck) {
+            if (JSON.stringify(form[field]) !== JSON.stringify(defaultForm[field])) {
+                return false; // If any field is different, form is not empty
+            }
+        }
+        return true; // All user-fillable fields match default, so it's empty
+      },
+      async loadFormData() {
+        try {
+          const response = await fetch('http://localhost/buildingpermitapplication/src/document/sanitary-backend/sanitary.php', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            const loadedData = result.data;
+            // Map the flat database structure back to your nested form object
+            this.form.lastName = loadedData.last_name || '';
+            this.form.firstName = loadedData.first_name || '';
+            this.form.mi = loadedData.middle_initial || '';
+            this.form.tin = loadedData.tin || '';
+            this.form.address.no = loadedData.owner_address_no || '';
+            this.form.address.street = loadedData.owner_address_street || '';
+            this.form.address.barangay = loadedData.owner_address_barangay || '';
+            this.form.address.city = loadedData.owner_address_city || '';
+            this.form.zip = loadedData.zip_code || '';
+            this.form.phone = loadedData.phone_number || '';
+            this.form.email = loadedData.email_address || '';
+
+            this.form.location.lotNo = loadedData.location_lot_no || '';
+            this.form.location.blkNo = loadedData.location_blk_no || '';
+            this.form.location.tctNo = loadedData.location_tct_no || '';
+            this.form.location.taxDecNo = loadedData.location_tax_dec_no || '';
+            this.form.location.street = loadedData.location_street || '';
+            this.form.location.barangay = loadedData.location_barangay || '';
+            this.form.location.city = loadedData.location_city || '';
+
+            this.form.scope = loadedData.scope_of_work || '';
+            this.form.scopeOtherDetails = loadedData.scope_other_details || '';
+
+            // Fixtures mapping
+            for (const key in this.form.fixtures) {
+                this.form.fixtures[key].qty = loadedData['fixture_' + key + '_qty'] || null;
+                this.form.fixtures[key].selected = !!parseInt(loadedData['fixture_' + key + '_selected']);
+            }
+            this.form.fixtures.othersFixture.details = loadedData.fixture_othersFixture_details || '';
+            // totalFixtures is a computed property, no direct mapping needed here
+
+            // System Type
+            this.form.systemType.waterDistribution = !!parseInt(loadedData.system_type_water_distribution);
+            this.form.systemType.sanitarySewer = !!parseInt(loadedData.system_type_sanitary_sewer);
+            this.form.systemType.stormDrainage = !!parseInt(loadedData.system_type_storm_drainage);
+
+            // Water Supply
+            this.form.waterSupply.shallowWell = !!parseInt(loadedData.water_supply_shallow_well);
+            this.form.waterSupply.deepWellPumpSet = !!parseInt(loadedData.water_supply_deep_well_pump_set);
+            this.form.waterSupply.cityMunicipalWaterSystem = !!parseInt(loadedData.water_supply_city_municipal_water_system);
+            this.form.waterSupply.others = !!parseInt(loadedData.water_supply_others);
+            this.form.waterSupply.othersDetails = loadedData.water_supply_others_details || '';
+
+            // System Disposal
+            this.form.systemDisposal.wasteWaterTreatmentPlant = !!parseInt(loadedData.system_disposal_waste_water_treatment_plant);
+            this.form.systemDisposal.septicVaultImhoffTank = !!parseInt(loadedData.system_disposal_septic_vault_imhoff_tank);
+            this.form.systemDisposal.sanitarySewerConnection = !!parseInt(loadedData.system_disposal_sanitary_sewer_connection);
+            this.form.systemDisposal.subSurfaceSandFilter = !!parseInt(loadedData.system_disposal_sub_surface_sand_filter);
+            this.form.systemDisposal.surfaceDrainage = !!parseInt(loadedData.system_disposal_surface_drainage);
+            this.form.systemDisposal.streetCanal = !!parseInt(loadedData.system_disposal_street_canal);
+            this.form.systemDisposal.waterCourse = !!parseInt(loadedData.system_disposal_water_course);
+
+            // Building Details
+            this.form.buildingDetails.numStorey = loadedData.building_num_storey || '';
+            this.form.buildingDetails.totalArea = loadedData.building_total_area || '';
+            this.form.buildingDetails.proposedDateOfConstruction = loadedData.building_proposed_date_of_construction || '';
+            this.form.buildingDetails.totalCostOfInstallation = loadedData.building_total_cost_of_installation || '';
+            this.form.buildingDetails.expectedDateOfCompletion = loadedData.building_expected_date_of_completion || '';
+            this.form.buildingDetails.preparedBy = loadedData.building_prepared_by || '';
+
+            // Building Documents
+            this.form.buildingDocuments.plansAndSpecs = !!parseInt(loadedData.doc_plans_and_specs);
+            this.form.buildingDocuments.billOfMaterials = !!parseInt(loadedData.doc_bill_of_materials);
+            this.form.buildingDocuments.costEstimates = !!parseInt(loadedData.doc_cost_estimates);
+            this.form.buildingDocuments.others = !!parseInt(loadedData.doc_others);
+            this.form.buildingDocuments.othersDetails = loadedData.doc_others_details || '';
+
+            // Box 4 Entries
+            const box4Labels = ['Application Fees', 'Permit Fees', 'Inspection Fees', 'Fines/Penalties', 'Other Charges'];
+            const box4DbKeys = ['application_fees', 'permit_fees', 'inspection_fees', 'fines_penalties', 'other_charges'];
+            this.form.box4Entries = box4Labels.map((label, idx) => {
+                const dbKey = box4DbKeys[idx];
+                return {
+                    label: label,
+                    amountDue: loadedData['box4_' + dbKey + '_amount'] || '',
+                    assessedBy: loadedData['box4_' + dbKey + '_assessed_by'] || '',
+                    orNo: loadedData['box4_' + dbKey + '_or_no'] || '',
+                    datePaid: loadedData['box4_' + dbKey + '_date_paid'] || '',
+                };
+            });
+
+            // Box 5 Entries
+            const box5Labels = ['NOTED', 'CHIEF-PROCESSING DIVISION/SECTION', 'RECEIVING AND RECORDING', 'GEODETIC (LINE AND GRADE)', 'SANITARY'];
+            const box5DbKeys = ['noted', 'chief', 'receiving', 'geodetic', 'sanitary'];
+            this.form.box5Entries = box5Labels.map((label, idx) => {
+                const dbKey = box5DbKeys[idx];
+                return {
+                    label: label,
+                    inTime: loadedData['box5_' + dbKey + '_in_time'] || '',
+                    inDate: loadedData['box5_' + dbKey + '_in_date'] || '',
+                    outTime: loadedData['box5_' + dbKey + '_out_time'] || '',
+                    outDate: loadedData['box5_' + dbKey + '_out_date'] || '',
+                    actionRemarks: loadedData['box5_' + dbKey + '_action_remarks'] || '',
+                    processedBy: loadedData['box5_' + dbKey + '_processed_by'] || '',
+                };
+            });
+
+            // Box 6
+            this.form.box6.engineerName = loadedData.box6_engineer_name || '';
+            this.form.box6.date = loadedData.box6_date || '';
+            this.form.box6.address = loadedData.box6_address || '';
+            this.form.box6.prcNo = loadedData.box6_prc_no || '';
+            this.form.box6.validity = loadedData.box6_validity || '';
+            this.form.box6.ptrNo = loadedData.box6_ptr_no || '';
+            this.form.box6.dateIssued = loadedData.box6_date_issued || '';
+            this.form.box6.issuedAt = loadedData.box6_issued_at || '';
+            this.form.box6.tin = loadedData.box6_tin || '';
+
+            // Box 7
+            this.form.box7.engineerName = loadedData.box7_engineer_name || '';
+            this.form.box7.date = loadedData.box7_date || '';
+            this.form.box7.address = loadedData.box7_address || '';
+            this.form.box7.prcNo = loadedData.box7_prc_no || '';
+            this.form.box7.validity = loadedData.box7_validity || '';
+            this.form.box7.ptrNo = loadedData.box7_ptr_no || '';
+            this.form.box7.dateIssued = loadedData.box7_date_issued || '';
+            this.form.box7.issuedAt = loadedData.box7_issued_at || '';
+            this.form.box7.tin = loadedData.box7_tin || '';
+
+            // Box 8
+            this.form.box8.signedName = loadedData.box8_signed_name || '';
+            this.form.box8.date = loadedData.box8_date || '';
+            this.form.box8.ctcNo = loadedData.box8_ctc_no || '';
+            this.form.box8.dateIssued = loadedData.box8_date_issued || '';
+            this.form.box8.placeIssued = loadedData.box8_place_issued || '';
+
+            this.statusMessage = 'Previous submitted data loaded successfully.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          } else {
+            console.log('No previous submitted data found from server or error loading:', result.message);
+            this.statusMessage = 'No previous submitted data found on server.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          }
+        } catch (error) {
+          console.error('Error loading form data from server:', error);
+          this.statusMessage = 'Error loading previous submitted data from server.';
+          this.messageColor = 'error';
+          this.showMessage = true;
+        }
+      },
+      async submitForm() {
+        // We will no longer block submission based on client-side validation results.
+        // Instead, we perform validation to highlight issues, but proceed with submission.
+        const { valid } = await this.$refs.form.validate(); // This still triggers visual feedback
+        
+        // You can add a warning message here if the form is not valid
+        if (!valid) {
+            this.statusMessage = 'Form has incomplete or invalid fields, but will attempt submission.';
+            this.messageColor = 'warning';
+            this.showMessage = true;
+            console.log('Form is invalid according to frontend rules, but submitting anyway.');
+        }
+
+
+        // Proceed with submission regardless of frontend validation status
+        try {
+            const response = await fetch('http://localhost/buildingpermitapplication/src/document/sanitary-backend/sanitary.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(this.form), // Send your form data as JSON
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              this.statusMessage = result.message;
+              this.messageColor = 'success';
+              this.showMessage = true;
+              console.log('Form submitted successfully:', result.message);
+              localStorage.removeItem('sanitaryPermitForm'); // Clear local storage on successful submission
+              this.resetForm(); // Reset form after successful submission
+            } else {
+              this.statusMessage = 'Submission failed: ' + result.message;
+              this.messageColor = 'error';
+              this.showMessage = true;
+              console.error('Form submission failed:', result.message);
+            }
+          } catch (error) {
+            this.statusMessage = 'An error occurred during submission. Please try again.';
+            this.messageColor = 'error';
+            this.showMessage = true;
+            console.error('Error during form submission:', error);
+          }
       },
       resetForm() {
         this.$refs.form.reset();
         this.$refs.form.resetValidation();
 
-        this.form.scopeOtherDetails = '';
+        // Reset nested objects and arrays to their initial empty states
+        // This is crucial because Vue's `reset()` might not deeply reset nested data
+        const initialData = this.$options.data.apply(this);
+        this.form = JSON.parse(JSON.stringify(initialData.form)); // Deep copy initial state
 
-        const initialFixtures = {};
-        const fixtureNames = [
-          'waterCloset', 'floorDrain', 'lavatories', 'kitchenSink', 'faucet',
-          'showerHead', 'waterMeter', 'greaseTrap', 'bathTubs', 'slopSinks',
-          'urinal', 'airconUnit', 'waterTankReservoir', 'bidet', 'laundryTrays',
-          'dentalCuspidor', 'gasHeater', 'electricalHeater', 'waterBoiler',
-          'drinkingFountain', 'barSink', 'sodaFountainSink', 'lavatorySink',
-          'sterilizer', 'swimmingPool', 'othersFixture'
-        ];
-        fixtureNames.forEach(name => {
-          initialFixtures[name] = { qty: null, selected: false };
-        });
-        this.form.fixtures = initialFixtures;
-
-        this.form.systemType = {
-          waterDistribution: false,
-          sanitarySewer: false,
-          stormDrainage: false,
-        };
-
-        this.form.waterSupply = {
-          shallowWell: false,
-          deepWellPumpSet: false,
-          cityMunicipalWaterSystem: false,
-          others: false,
-          othersDetails: '',
-        };
-        this.form.systemDisposal = {
-          wasteWaterTreatmentPlant: false,
-          septicVaultImhoffTank: false,
-          sanitarySewerConnection: false,
-          subSurfaceSandFilter: false,
-          surfaceDrainage: false,
-          streetCanal: false,
-          waterCourse: false,
-        };
-        this.form.buildingDetails = {
-          numStorey: '',
-          totalArea: '',
-          proposedDateOfConstruction: '',
-          totalCostOfInstallation: '',
-          expectedDateOfCompletion: '',
-          preparedBy: '',
-        };
-        this.form.buildingDocuments = {
-          plansAndSpecs: false,
-          billOfMaterials: false,
-          costEstimates: false,
-          others: false,
-          othersDetails: '',
-        };
-
-        // Reset Box 4 data
-        this.form.box4Entries = [ //
-          { label: 'Application Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-          { label: 'Permit Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-          { label: 'Inspection Fees', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-          { label: 'Fines/Penalties', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-          { label: 'Other Charges', amountDue: '', assessedBy: '', orNo: '', datePaid: '' }, //
-        ];
-
-        // Reset Box 5 data
-        this.form.box5Entries = [ //
-          { label: 'NOTED', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-          { label: 'CHIEF-PROCESSING DIVISION/SECTION', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-          { label: 'RECEIVING AND RECORDING', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-          { label: 'GEODETIC (LINE AND GRADE)', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-          { label: 'SANITARY', inTime: '', inDate: '', outTime: '', outDate: '', actionRemarks: '', processedBy: '' }, //
-        ];
-
-        // Reset Box 6 data
-        this.form.box6 = { //
-          date: '', //
-          engineerName: '', //
-          address: '', //
-          prcNo: '', //
-          validity: '', //
-          ptrNo: '', //
-          dateIssued: '', //
-          issuedAt: '', //
-          tin: '', //
-        };
-
-        // Reset Box 7 data
-        this.form.box7 = { //
-          date: '', //
-          engineerName: '', //
-          address: '', //
-          prcNo: '', //
-          validity: '', //
-          ptrNo: '', //
-          dateIssued: '', //
-          issuedAt: '', //
-          tin: '', //
-        };
-
-        // Reset Box 8 data
-        this.form.box8 = { //
-          signedName: '', //
-          date: '', //
-          ctcNo: '', //
-          dateIssued: '', //
-          placeIssued: '', //
-        };
+        localStorage.removeItem('sanitaryPermitForm'); // Clear local storage on reset
+        this.statusMessage = 'Form has been reset.';
+        this.messageColor = 'info';
+        this.showMessage = true;
       },
     },
   };
@@ -1335,7 +1521,7 @@
     min-width: 200px; /* Ensure space for signature */
   }
 
-  /* Styles for table inputs in Box 4 and Box 5 to make them look like static text */
+  /* Styles for table inputs in Box 4 and Box 5 to make them look like interactive text fields */
   .v-table .plain-input.v-text-field {
     --v-input-control-height: auto; /* Allow content to dictate height */
     --v-input-padding-top: 0;
@@ -1353,6 +1539,7 @@
   .v-table .plain-input.v-text-field .v-field {
     padding-left: 0;
     padding-right: 0;
+    border-bottom: 1px solid #ccc; /* Ensure underline for these fields */
   }
 
   .v-table .plain-input.v-text-field .v-field__input {

@@ -294,6 +294,11 @@
                 v-model="form.natureOfCivilStructuralWorks.steelTowers"
                 hide-details
               />
+              <v-checkbox
+                label="OTHERS (Specify)"
+                v-model="form.natureOfCivilStructuralWorks.others"
+                hide-details
+              />
               <v-expand-transition>
                 <v-text-field
                   v-if="form.natureOfCivilStructuralWorks.others"
@@ -307,11 +312,16 @@
             </v-col>
           </v-row>
           <h4 class="text-subtitle-1 mt-4 mb-2">PREPARED BY</h4>
-          <div class="static-line"></div>
+          <v-text-field
+            v-model="form.preparedBy"
+            class="plain-input"
+            hide-details
+            label="Name"
+          />
         </v-card-text>
       </v-card>
 
-      <!-- BOX 3 & BOX 4 - Non-Interactive Display -->
+      <!-- BOX 3 & BOX 4 - Static Display -->
       <v-row class="mb-6">
         <v-col cols="12" md="6">
           <v-card elevation="2" class="h-100">
@@ -488,48 +498,38 @@
             >
             <v-card-subtitle>BUILDING OWNER</v-card-subtitle>
             <v-card-text>
-              <v-text-field
-                label="(Signature Over Printed Name)"
-                v-model="form.buildingOwner.signatureName"
-                class="plain-input"
-                hide-details
-              />
-              <v-text-field
-                label="Date"
-                v-model="form.buildingOwner.date"
-                class="plain-input"
-                hide-details
-              />
-              <v-text-field
-                label="Address"
-                v-model="form.buildingOwner.address"
-                class="plain-input"
-                hide-details
-              />
+              <div class="static-field-group">
+                <div class="static-line-label">
+                  (Signature Over Printed Name)
+                </div>
+                <div class="static-line"></div>
+              </div>
+              <div class="static-field-group">
+                <div class="static-line-label">Date</div>
+                <div class="static-line"></div>
+              </div>
+              <div class="static-field-group">
+                <div class="static-line-label">Address</div>
+                <div class="static-line"></div>
+              </div>
               <v-row>
                 <v-col cols="6">
-                  <v-text-field
-                    label="C.T.C. No."
-                    v-model="form.buildingOwner.ctcNo"
-                    class="plain-input"
-                    hide-details
-                  />
+                  <div class="static-field-group">
+                    <div class="static-line-label">C.T.C. No.</div>
+                    <div class="static-line"></div>
+                  </div>
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field
-                    label="Date Issued"
-                    v-model="form.buildingOwner.dateIssued"
-                    class="plain-input"
-                    hide-details
-                  />
+                  <div class="static-field-group">
+                    <div class="static-line-label">Date Issued</div>
+                    <div class="static-line"></div>
+                  </div>
                 </v-col>
               </v-row>
-              <v-text-field
-                label="Place Issued"
-                v-model="form.buildingOwner.placeIssued"
-                class="plain-input"
-                hide-details
-              />
+              <div class="static-field-group">
+                <div class="static-line-label">Place Issued</div>
+                <div class="static-line"></div>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -791,6 +791,21 @@
         </v-col>
       </v-row>
     </v-form>
+
+    <v-snackbar
+      v-model="showMessage"
+      :timeout="3000"
+      :color="messageColor"
+      top
+      right
+    >
+      {{ statusMessage }}
+      <template v-slot:actions>
+        <v-btn color="white" variant="text" @click="showMessage = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -799,6 +814,9 @@
     data() {
       return {
         valid: false, // Overall form validity
+        showMessage: false, // Controls visibility of the snackbar message
+        statusMessage: '', // The message to display in the snackbar
+        messageColor: '', // Color of the snackbar (e.g., 'success', 'error')
         form: {
           lastName: '',
           firstName: '',
@@ -824,20 +842,21 @@
           },
           scope: '',
           scopeOtherDetails: '',
-          natureOfCivilStructuralWorks: { // Renamed from architecturalFacilities
-            staking: false,
-            excavation: false,
-            soilStabilization: false,
-            pilingWorks: false,
-            foundation: false,
-            erectionLifting: false,
-            concreteFraming: false,
-            structuralSteelFraming: false,
-            slabs: false,
-            walls: false,
-            prestressWorks: false,
-            materialTesting: false,
-            steelTowers: false,
+          preparedBy: '', // Added preparedBy here
+          natureOfCivilStructuralWorks: { // Corresponds to 'nature_' fields in DB
+            staking: false, // -> nature_telecom
+            excavation: false, // -> nature_broadcast
+            soilStabilization: false, // -> nature_tv
+            pilingWorks: false, // -> nature_it
+            foundation: false, // -> nature_security_alarm
+            erectionLifting: false, // -> nature_electronics_alarm
+            concreteFraming: false, // -> nature_sound_comm
+            structuralSteelFraming: false, // -> nature_central_clock
+            slabs: false, // -> nature_sound_system
+            walls: false, // -> nature_elec_control_conveyor
+            prestressWorks: false, // -> nature_elec_comp_process_auto
+            materialTesting: false, // -> nature_building_auto_mgmt_ctrl
+            steelTowers: false, // -> nature_building_wiring_cable
             tanks: false,
             others: false,
             othersDetails: '',
@@ -872,8 +891,8 @@
             issuedAt: '',
             tin: '',
           },
-          supervisorArchitectural: { // This would ideally be supervisorCivilStructural
-            architectName: '', // Retaining architectName for now as fields are generic
+          supervisorArchitectural: {
+            architectName: '',
             date: '',
             address: '',
             iapoaNo: '',
@@ -901,9 +920,9 @@
             dateIssued: '',
             placeIssued: '',
           },
-          civilStructuralDocuments: { // New data properties for BOX 7 (Civil Structural)
-            designsComputations: false,
-            billOfMaterials: false,
+          civilStructuralDocuments: { // Corresponds to 'doc_' fields in DB
+            designsComputations: false, // -> doc_designs_comp
+            billOfMaterials: false, // -> doc_bill_materials
             costEstimates: false,
             others: false,
             othersDetails: '',
@@ -938,7 +957,7 @@
             }
             return true;
           },
-          requiredIfCivilStructuralOthersDocuments: value => { // New rule for BOX 7 others
+          requiredIfCivilStructuralOthersDocuments: value => {
             if (this.form.civilStructuralDocuments.others) {
               return !!value || 'Please specify details for "OTHERS" civil/structural documents.';
             }
@@ -952,70 +971,233 @@
         return this.form.scope === 'othersScope';
       },
     },
+    watch: {
+      form: {
+        handler(newValue) {
+          localStorage.setItem('electronicsPermitForm', JSON.stringify(newValue));
+          console.log('Form data saved to localStorage.');
+        },
+        deep: true, // Watch for changes inside nested objects
+      },
+    },
+    mounted() {
+      // Attempt to load unsaved draft from local storage first
+      this.loadDraftFromLocalStorage();
+
+      // If, after attempting to load a draft, the form is still empty (meaning no draft was found or loaded),
+      // then load the last submitted data from the server.
+      if (this.isFormEmpty(this.form)) {
+        this.loadFormData(); // This method now focuses on loading from the server
+      }
+    },
     methods: {
+      loadDraftFromLocalStorage() {
+        const savedForm = localStorage.getItem('electronicsPermitForm'); // Changed key
+        if (savedForm) {
+          try {
+            const parsedForm = JSON.parse(savedForm);
+            // Only load if the parsed form is not empty or default
+            if (Object.keys(parsedForm).length > 0 && !this.isFormEmpty(parsedForm)) {
+              this.form = parsedForm;
+              this.statusMessage = 'Draft data loaded from your last session.';
+              this.messageColor = 'info';
+              this.showMessage = true;
+            }
+          } catch (e) {
+            console.error("Error parsing localStorage data:", e);
+            localStorage.removeItem('electronicsPermitForm'); // Clear bad data
+          }
+        }
+      },
+      isFormEmpty(form) {
+        // Get a fresh instance of the default form state for comparison
+        const defaultForm = this.$options.data.apply(this).form;
+        // Stringify and compare to check for deep equality
+        return JSON.stringify(form) === JSON.stringify(defaultForm);
+      },
+      async loadFormData() {
+        try {
+          const response = await fetch('http://localhost/buildingpermitapplication/src/document/electronics-backend/electronics.php', { // Changed URL
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            const loadedData = result.data;
+            // Map the flat database structure back to your nested form object
+            this.form.lastName = loadedData.last_name || '';
+            this.form.firstName = loadedData.first_name || '';
+            this.form.mi = loadedData.mi || '';
+            this.form.tin = loadedData.tin || '';
+            this.form.address.no = loadedData.address_no || '';
+            this.form.address.street = loadedData.address_street || '';
+            this.form.address.barangay = loadedData.address_barangay || '';
+            this.form.address.city = loadedData.address_city || '';
+            this.form.zip = loadedData.zip || '';
+            this.form.phone = loadedData.phone || '';
+            this.form.email = loadedData.email || '';
+
+            this.form.location.lotNo = loadedData.location_lot_no || '';
+            this.form.location.blkNo = loadedData.location_blk_no || '';
+            this.form.location.tctNo = loadedData.location_tct_no || '';
+            this.form.location.taxDecNo = loadedData.location_tax_dec_no || '';
+            this.form.location.street = loadedData.location_street || '';
+            this.form.location.barangay = loadedData.location_barangay || '';
+            this.form.location.city = loadedData.location_city || '';
+
+            this.form.scope = loadedData.scope || '';
+            this.form.scopeOtherDetails = loadedData.scope_other_details || '';
+            this.form.preparedBy = loadedData.prepared_by || ''; // Map preparedBy
+
+            // Nature of Installation Works/Equipment System Checkboxes - Using new shorter names
+            this.form.natureOfCivilStructuralWorks.staking = !!parseInt(loadedData.nature_telecom);
+            this.form.natureOfCivilStructuralWorks.excavation = !!parseInt(loadedData.nature_broadcast);
+            this.form.natureOfCivilStructuralWorks.soilStabilization = !!parseInt(loadedData.nature_tv);
+            this.form.natureOfCivilStructuralWorks.pilingWorks = !!parseInt(loadedData.nature_it);
+            this.form.natureOfCivilStructuralWorks.foundation = !!parseInt(loadedData.nature_security_alarm);
+            this.form.natureOfCivilStructuralWorks.erectionLifting = !!parseInt(loadedData.nature_electronics_alarm);
+            this.form.natureOfCivilStructuralWorks.concreteFraming = !!parseInt(loadedData.nature_sound_comm);
+            this.form.natureOfCivilStructuralWorks.structuralSteelFraming = !!parseInt(loadedData.nature_central_clock);
+            this.form.natureOfCivilStructuralWorks.slabs = !!parseInt(loadedData.nature_sound_system);
+            this.form.natureOfCivilStructuralWorks.walls = !!parseInt(loadedData.nature_elec_control_conveyor);
+            this.form.natureOfCivilStructuralWorks.prestressWorks = !!parseInt(loadedData.nature_elec_comp_process_auto);
+            this.form.natureOfCivilStructuralWorks.materialTesting = !!parseInt(loadedData.nature_building_auto_mgmt_ctrl);
+            this.form.natureOfCivilStructuralWorks.steelTowers = !!parseInt(loadedData.nature_building_wiring_cable);
+            this.form.natureOfCivilStructuralWorks.tanks = !!parseInt(loadedData.nature_tanks);
+            this.form.natureOfCivilStructuralWorks.others = !!parseInt(loadedData.nature_others);
+            this.form.natureOfCivilStructuralWorks.othersDetails = loadedData.nature_others_details || '';
+
+
+            this.form.siteOccupancy.buildingFootPrint = loadedData.site_building_foot_print || '';
+            this.form.siteOccupancy.imperviousSurfaceArea = loadedData.site_impervious_surface_area || '';
+            this.form.siteOccupancy.unpavedSurfaceArea = loadedData.site_unpaved_surface_area || '';
+            this.form.siteOccupancy.others = loadedData.site_others || '';
+
+            this.form.fireCodeConformance.numWidthExitDoors = !!parseInt(loadedData.fire_num_width_exit_doors);
+            this.form.fireCodeConformance.widthCorridors = !!parseInt(loadedData.fire_width_corridors);
+            this.form.fireCodeConformance.distanceFireExits = !!parseInt(loadedData.fire_distance_fire_exits);
+            this.form.fireCodeConformance.accessPublicStreets = !!parseInt(loadedData.fire_access_public_streets);
+            this.form.fireCodeConformance.fireWalls = !!parseInt(loadedData.fire_walls);
+            this.form.fireCodeConformance.fireFightingSafety = !!parseInt(loadedData.fire_fighting_safety);
+            this.form.fireCodeConformance.smokeDetectors = !!parseInt(loadedData.fire_smoke_detectors);
+            this.form.fireCodeConformance.emergencyLights = !!parseInt(loadedData.fire_emergency_lights);
+            this.form.fireCodeConformance.others = !!parseInt(loadedData.fire_others);
+
+            this.form.designProfessional.architectName = loadedData.design_prof_architect_name || '';
+            this.form.designProfessional.date = loadedData.design_prof_date || '';
+            this.form.designProfessional.address = loadedData.design_prof_address || '';
+            this.form.designProfessional.iapoaNo = loadedData.design_prof_iapoa_no || '';
+            this.form.designProfessional.iapoaValidity = loadedData.design_prof_iapoa_validity || '';
+            this.form.designProfessional.prcNo = loadedData.design_prof_prc_no || '';
+            this.form.designProfessional.prcValidity = loadedData.design_prof_prc_validity || '';
+            this.form.designProfessional.ptrNo = loadedData.design_prof_ptr_no || '';
+            this.form.designProfessional.ptrDateIssued = loadedData.design_prof_ptr_date_issued || '';
+            this.form.designProfessional.issuedAt = loadedData.design_prof_issued_at || '';
+            this.form.designProfessional.tin = loadedData.design_prof_tin || '';
+
+            this.form.supervisorArchitectural.architectName = loadedData.supervisor_architectural_name || '';
+            this.form.supervisorArchitectural.date = loadedData.supervisor_architectural_date || '';
+            this.form.supervisorArchitectural.address = loadedData.supervisor_architectural_address || '';
+            this.form.supervisorArchitectural.iapoaNo = loadedData.supervisor_architectural_iapoa_no || '';
+            this.form.supervisorArchitectural.iapoaValidity = loadedData.supervisor_architectural_iapoa_validity || '';
+            this.form.supervisorArchitectural.prcNo = loadedData.supervisor_architectural_prc_no || '';
+            this.form.supervisorArchitectural.prcValidity = loadedData.supervisor_architectural_prc_validity || '';
+            this.form.supervisorArchitectural.ptrNo = loadedData.supervisor_architectural_ptr_no || '';
+            this.form.supervisorArchitectural.ptrDateIssued = loadedData.supervisor_architectural_ptr_date_issued || '';
+            this.form.supervisorArchitectural.issuedAt = loadedData.supervisor_architectural_issued_at || '';
+            this.form.supervisorArchitectural.tin = loadedData.supervisor_architectural_tin || '';
+
+            this.form.buildingOwner.signatureName = loadedData.building_owner_signature_name || '';
+            this.form.buildingOwner.date = loadedData.building_owner_date || '';
+            this.form.buildingOwner.address = loadedData.building_owner_address || '';
+            this.form.buildingOwner.ctcNo = loadedData.building_owner_ctc_no || '';
+            this.form.buildingOwner.dateIssued = loadedData.building_owner_date_issued || '';
+            this.form.buildingOwner.placeIssued = loadedData.building_owner_place_issued || '';
+
+            this.form.lotOwner.signatureName = loadedData.lot_owner_signature_name || '';
+            this.form.lotOwner.date = loadedData.lot_owner_date || '';
+            this.form.lotOwner.address = loadedData.lot_owner_address || '';
+            this.form.lotOwner.ctcNo = loadedData.lot_owner_ctc_no || '';
+            this.form.lotOwner.dateIssued = loadedData.lot_owner_date_issued || '';
+            this.form.lotOwner.placeIssued = loadedData.lot_owner_place_issued || '';
+
+            // Civil Structural Documents (Box 7) - Using new shorter names
+            this.form.civilStructuralDocuments.designsComputations = !!parseInt(loadedData.doc_designs_comp);
+            this.form.civilStructuralDocuments.billOfMaterials = !!parseInt(loadedData.doc_bill_materials);
+            this.form.civilStructuralDocuments.costEstimates = !!parseInt(loadedData.doc_cost_estimates);
+            this.form.civilStructuralDocuments.others = !!parseInt(loadedData.doc_others);
+            this.form.civilStructuralDocuments.othersDetails = loadedData.doc_others_details || '';
+
+            this.statusMessage = 'Previous submitted data loaded successfully.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          } else {
+            console.log('No previous submitted data found from server or error loading:', result.message);
+            this.statusMessage = 'No previous submitted data found on server.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          }
+        } catch (error) {
+          console.error('Error loading form data from server:', error);
+          this.statusMessage = 'Error loading previous submitted data from server.';
+          this.messageColor = 'error';
+          this.showMessage = true;
+        }
+      },
       async submitForm() {
         const { valid } = await this.$refs.form.validate();
         if (valid) {
-          console.log('Form is valid and submitted:', this.form);
-          // Add your form submission logic here (e.g., API call)
+          console.log('Form is valid and attempting submission:', this.form);
+          try {
+            const response = await fetch('http://localhost/buildingpermitapplication/src/document/electronics-backend/electronics.php', { // Changed URL
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(this.form), // Send your form data as JSON
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              this.statusMessage = result.message;
+              this.messageColor = 'success';
+              this.showMessage = true;
+              console.log('Form submitted successfully:', result.message);
+              localStorage.removeItem('electronicsPermitForm'); // Clear local storage on successful submission
+              this.resetForm(); // Reset form after successful submission
+            } else {
+              this.statusMessage = 'Submission failed: ' + result.message;
+              this.messageColor = 'error';
+              this.showMessage = true;
+              console.error('Form submission failed:', result.message);
+            }
+          } catch (error) {
+            this.statusMessage = 'An error occurred during submission. Please try again.';
+            this.messageColor = 'error';
+            this.showMessage = true;
+            console.error('Error during form submission:', error);
+          }
         } else {
+          this.statusMessage = 'Please fill in all required fields.';
+          this.messageColor = 'warning';
+          this.showMessage = true;
           console.log('Form is invalid. Please check the fields.');
         }
       },
       resetForm() {
         this.$refs.form.reset();
         this.$refs.form.resetValidation();
-        this.form.scopeOtherDetails = '';
-        this.form.natureOfCivilStructuralWorks = {
-          staking: false,
-          excavation: false,
-          soilStabilization: false,
-          pilingWorks: false,
-          foundation: false,
-          erectionLifting: false,
-          concreteFraming: false,
-          structuralSteelFraming: false,
-          slabs: false,
-          walls: false,
-          prestressWorks: false,
-          materialTesting: false,
-          steelTowers: false,
-          tanks: false,
-          others: false,
-          othersDetails: '',
-        };
-        this.form.siteOccupancy = {
-          buildingFootPrint: '',
-          imperviousSurfaceArea: '',
-          unpavedSurfaceArea: '',
-          others: '',
-        };
-        this.form.fireCodeConformance = {
-          numWidthExitDoors: false,
-          widthCorridors: false,
-          distanceFireExits: false,
-          accessPublicStreets: false,
-          fireWalls: false,
-          fireFightingSafety: false,
-          smokeDetectors: false,
-          emergencyLights: false,
-          others: false,
-        };
-        this.form.buildingOwner = {
-          signatureName: '',
-          date: '',
-          address: '',
-          ctcNo: '',
-          dateIssued: '',
-          placeIssued: '',
-        };
-        this.form.civilStructuralDocuments = { // Reset new section
-            designsComputations: false,
-            billOfMaterials: false,
-            costEstimates: false,
-            others: false,
-            othersDetails: '',
-        };
+        // Manually reset specific fields or nested objects if `reset()` doesn't handle them fully
+        // This is crucial to ensure a clean slate after submission or explicit reset.
+        this.form = this.$options.data.apply(this).form; // Reset to initial data state
+        localStorage.removeItem('electronicsPermitForm'); // Clear local storage on reset
+        this.statusMessage = 'Form has been reset.';
+        this.messageColor = 'info';
+        this.showMessage = true;
       },
     },
   };

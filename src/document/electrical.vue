@@ -535,13 +535,13 @@
               />
               <v-checkbox
                 label=" PRPOSED STARTING DATE OF CONSTRUCTION/INSTALLATION"
-                v-model="form.civilStructuralDocuments.billOfMaterials"
+                v-model="form.civilStructuralDocuments.proposedStartingDate"
                 hide-details
               />
             </v-col>
             <v-col cols="12" md="6">
               <v-checkbox
-                label="PRPOSED STARTING DATE OF CONSTRUCTION/INSTALLATION"
+                label="COST ESTIMATES"
                 v-model="form.civilStructuralDocuments.costEstimates"
                 hide-details
               />
@@ -712,157 +712,63 @@
         </v-col>
       </v-row>
     </v-form>
+
+    <v-snackbar
+      v-model="showMessage"
+      :timeout="3000"
+      :color="messageColor"
+      top
+      right
+    >
+      {{ statusMessage }}
+      <template v-slot:actions>
+        <v-btn color="white" variant="text" @click="showMessage = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        valid: false, // Overall form validity
-        form: {
-          lastName: '',
-          firstName: '',
-          mi: '',
-          tin: '',
-          address: {
-            no: '',
-            street: '',
-            barangay: '',
-            city: '',
-          },
-          zip: '',
-          phone: '',
-          email: '',
-          location: {
-            lotNo: '',
-            blkNo: '',
-            tctNo: '',
-            taxDecNo: '',
-            street: '',
-            barangay: '',
-            city: '',
-          },
-          scope: '',
-          scopeOtherDetails: '',
-          electricalSummary: {
-            totalConnectedLoads: '',
-            totalTransformerCapacity: '',
-            totalGeneratorUpsCapacity: '',
-          },
-          // New data properties for Box 2 from image_902215.png
-          designProfessionalElectrical: {
-            name: '',
-            date: '',
-            address: '',
-            prcNo: '',
-            prcValidity: '',
-            ptrNo: '',
-            ptrDateIssued: '',
-            issuedAt: '',
-            tin: '',
-          },
-          // New data properties for Box 3 from image_902215.png
-          supervisorProfessional: {
-            peEngineer: false,
-            reEngineer: false,
-            masterElectrician: false,
-            name: '',
-            date: '',
-            address: '',
-            prcNo: '',
-            prcValidity: '',
-            ptrNo: '',
-            ptrDateIssued: '',
-            issuedAt: '',
-            tin: '',
-          },
-          // Updated buildingOwner for Box 4 from image_902215.png
-          buildingOwner: {
-            signatureName: '',
-            date: '',
-            address: '',
-            ctcNo: '',
-            dateIssued: '',
-            placeIssued: '',
-          },
-          // Updated lotOwner for Box 5 from image_902215.png
-          lotOwner: {
-            signatureName: '',
-            date: '',
-            address: '',
-            ctcNo: '',
-            dateIssued: '',
-            placeIssued: '',
-          },
-          civilStructuralDocuments: {
-            designsComputations: false,
-            billOfMaterials: false,
-            costEstimates: false,
-            others: false,
-            othersDetails: '',
-          },
+export default {
+  data() {
+    return {
+      valid: false, // Overall form validity
+      showMessage: false, // Controls visibility of the snackbar message
+      statusMessage: '', // The message to display in the snackbar
+      messageColor: '', // Color of the snackbar (e.g., 'success', 'error')
+      form: {
+        lastName: '',
+        firstName: '',
+        mi: '',
+        tin: '',
+        address: {
+          no: '',
+          street: '',
+          barangay: '',
+          city: '',
         },
-        rules: {
-          required: (value) => !!value || 'This field is required.',
-          email: (value) => {
-            if (!value) return true;
-            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return pattern.test(value) || 'Invalid e-mail.';
-          },
-          numericOnly: (value) => {
-            if (value === null || value === '') return true;
-            const pattern = /^[0-9]+$/;
-            return pattern.test(value) || 'Only numbers are allowed.';
-          },
-          numericAndDecimalOnly: (value) => {
-            if (value === null || value === '') return true;
-            const pattern = /^[0-9]*(\.[0-9]+)?$/;
-            return pattern.test(value) || 'Only numbers and decimals are allowed.';
-          },
-          requiredIfOthers: (value) => {
-            if (this.form.scope === 'othersScope') {
-              return !!value || 'Please specify details for "OTHERS (Specify)".';
-            }
-            return true;
-          },
-          requiredIfCivilStructuralOthersDocuments: (value) => {
-            if (this.form.civilStructuralDocuments.others) {
-              return (
-                !!value || 'Please specify details for "OTHERS" civil/structural documents.'
-              );
-            }
-            return true;
-          },
+        zip: '',
+        phone: '',
+        email: '',
+        location: {
+          lotNo: '',
+          blkNo: '',
+          tctNo: '',
+          taxDecNo: '',
+          street: '',
+          barangay: '',
+          city: '',
         },
-      };
-    },
-    computed: {
-      showOthersField() {
-        return this.form.scope === 'othersScope';
-      },
-    },
-    methods: {
-      async submitForm() {
-        const { valid } = await this.$refs.form.validate();
-        if (valid) {
-          console.log('Form is valid and submitted:', this.form);
-          // Add your form submission logic here (e.g., API call)
-        } else {
-          console.log('Form is invalid. Please check the fields.');
-        }
-      },
-      resetForm() {
-        this.$refs.form.reset();
-        this.$refs.form.resetValidation();
-        this.form.scopeOtherDetails = '';
-        this.form.electricalSummary = {
+        scope: '',
+        scopeOtherDetails: '',
+        electricalSummary: {
           totalConnectedLoads: '',
           totalTransformerCapacity: '',
           totalGeneratorUpsCapacity: '',
-        };
-        // Reset new fields for Box 2
-        this.form.designProfessionalElectrical = {
+        },
+        designProfessionalElectrical: {
           name: '',
           date: '',
           address: '',
@@ -872,9 +778,8 @@
           ptrDateIssued: '',
           issuedAt: '',
           tin: '',
-        };
-        // Reset new fields for Box 3
-        this.form.supervisorProfessional = {
+        },
+        supervisorProfessional: {
           peEngineer: false,
           reEngineer: false,
           masterElectrician: false,
@@ -887,123 +792,348 @@
           ptrDateIssued: '',
           issuedAt: '',
           tin: '',
-        };
-        // Reset updated fields for Box 4
-        this.form.buildingOwner = {
+        },
+        buildingOwner: {
           signatureName: '',
           date: '',
           address: '',
           ctcNo: '',
           dateIssued: '',
           placeIssued: '',
-        };
-        // Reset updated fields for Box 5
-        this.form.lotOwner = {
+        },
+        lotOwner: {
           signatureName: '',
           date: '',
           address: '',
           ctcNo: '',
           dateIssued: '',
           placeIssued: '',
-        };
-        this.form.civilStructuralDocuments = {
+        },
+        civilStructuralDocuments: {
           designsComputations: false,
           billOfMaterials: false,
+          proposedStartingDate: false,
           costEstimates: false,
           others: false,
           othersDetails: '',
-        };
+        },
       },
+      rules: {
+        required: (value) => !!value || 'This field is required.',
+        email: (value) => {
+          if (!value) return true;
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return pattern.test(value) || 'Invalid e-mail.';
+        },
+        numericOnly: (value) => {
+          if (value === null || value === '') return true;
+          const pattern = /^[0-9]+$/;
+          return pattern.test(value) || 'Only numbers are allowed.';
+        },
+        numericAndDecimalOnly: (value) => {
+          if (value === null || value === '') return true;
+          const pattern = /^[0-9]*(\.[0-9]+)?$/;
+          return pattern.test(value) || 'Only numbers and decimals are allowed.';
+        },
+        requiredIfOthers: (value) => {
+          if (this.form.scope === 'othersScope') {
+            return !!value || 'Please specify details for "OTHERS (Specify)".';
+          }
+          return true;
+        },
+        requiredIfCivilStructuralOthersDocuments: (value) => {
+          if (this.form.civilStructuralDocuments.others) {
+            return (
+              !!value || 'Please specify details for "OTHERS" civil/structural documents.'
+            );
+          }
+          return true;
+        },
+      },
+    };
+  },
+  computed: {
+    showOthersField() {
+      return this.form.scope === 'othersScope';
     },
-  };
+  },
+  watch: {
+    form: {
+      handler(newValue) {
+        localStorage.setItem('electricalPermitForm', JSON.stringify(newValue));
+        console.log('Form data saved to localStorage.');
+      },
+      deep: true, // Watch for changes inside nested objects
+    },
+  },
+  mounted() {
+    this.loadFormData();
+    this.loadDraftFromLocalStorage(); // Load draft from local storage when component mounts
+  },
+  methods: {
+    loadDraftFromLocalStorage() {
+      const savedForm = localStorage.getItem('electricalPermitForm');
+      if (savedForm) {
+        try {
+          const parsedForm = JSON.parse(savedForm);
+          // Only load if the parsed form is not empty or default
+          if (Object.keys(parsedForm).length > 0 && !this.isFormEmpty(parsedForm)) {
+            this.form = parsedForm;
+            this.statusMessage = 'Draft data loaded from your last session.';
+            this.messageColor = 'info';
+            this.showMessage = true;
+          }
+        } catch (e) {
+          console.error("Error parsing localStorage data:", e);
+          localStorage.removeItem('electricalPermitForm'); // Clear bad data
+        }
+      }
+    },
+    isFormEmpty(form) {
+      // Simple check to see if the form is mostly empty, can be expanded
+      const defaultForm = this.$options.data.apply(this).form;
+      return JSON.stringify(form) === JSON.stringify(defaultForm);
+    },
+    async loadFormData() {
+      try {
+        const response = await fetch('http://localhost/buildingpermitapplication/src/document/electrical-backend/electrical.php', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          // Map the flat database structure back to your nested form object
+          const loadedData = result.data;
+          this.form.lastName = loadedData.last_name || '';
+          this.form.firstName = loadedData.first_name || '';
+          this.form.mi = loadedData.mi || '';
+          this.form.tin = loadedData.tin || '';
+          this.form.address.no = loadedData.address_no || '';
+          this.form.address.street = loadedData.address_street || '';
+          this.form.address.barangay = loadedData.address_barangay || '';
+          this.form.address.city = loadedData.address_city || '';
+          this.form.zip = loadedData.zip || '';
+          this.form.phone = loadedData.phone || '';
+          this.form.email = loadedData.email || '';
+
+          this.form.location.lotNo = loadedData.location_lot_no || '';
+          this.form.location.blkNo = loadedData.location_blk_no || '';
+          this.form.location.tctNo = loadedData.location_tct_no || '';
+          this.form.location.taxDecNo = loadedData.location_tax_dec_no || '';
+          this.form.location.street = loadedData.location_street || '';
+          this.form.location.barangay = loadedData.location_barangay || '';
+          this.form.location.city = loadedData.location_city || '';
+
+          this.form.scope = loadedData.scope || '';
+          this.form.scopeOtherDetails = loadedData.scope_other_details || '';
+
+          this.form.electricalSummary.totalConnectedLoads = loadedData.total_connected_loads || '';
+          this.form.electricalSummary.totalTransformerCapacity = loadedData.total_transformer_capacity || '';
+          this.form.electricalSummary.totalGeneratorUpsCapacity = loadedData.total_generator_ups_capacity || '';
+
+          this.form.designProfessionalElectrical.name = loadedData.design_prof_name || '';
+          this.form.designProfessionalElectrical.date = loadedData.design_prof_date || '';
+          this.form.designProfessionalElectrical.address = loadedData.design_prof_address || '';
+          this.form.designProfessionalElectrical.prcNo = loadedData.design_prof_prc_no || '';
+          this.form.designProfessionalElectrical.prcValidity = loadedData.design_prof_prc_validity || '';
+          this.form.designProfessionalElectrical.ptrNo = loadedData.design_prof_ptr_no || '';
+          this.form.designProfessionalElectrical.ptrDateIssued = loadedData.design_prof_ptr_date_issued || '';
+          this.form.designProfessionalElectrical.issuedAt = loadedData.design_prof_issued_at || '';
+          this.form.designProfessionalElectrical.tin = loadedData.design_prof_tin || '';
+
+          // Convert tinyint(1) from database to boolean for checkboxes
+          this.form.supervisorProfessional.peEngineer = !!parseInt(loadedData.supervisor_pe_engineer);
+          this.form.supervisorProfessional.reEngineer = !!parseInt(loadedData.supervisor_re_engineer);
+          this.form.supervisorProfessional.masterElectrician = !!parseInt(loadedData.supervisor_master_electrician);
+          this.form.supervisorProfessional.name = loadedData.supervisor_name || '';
+          this.form.supervisorProfessional.date = loadedData.supervisor_date || '';
+          this.form.supervisorProfessional.address = loadedData.supervisor_address || '';
+          this.form.supervisorProfessional.prcNo = loadedData.supervisor_prc_no || '';
+          this.form.supervisorProfessional.prcValidity = loadedData.supervisor_prc_validity || '';
+          this.form.supervisorProfessional.ptrNo = loadedData.supervisor_ptr_no || '';
+          this.form.supervisorProfessional.ptrDateIssued = loadedData.supervisor_ptr_date_issued || '';
+          this.form.supervisorProfessional.issuedAt = loadedData.supervisor_issued_at || '';
+          this.form.supervisorProfessional.tin = loadedData.supervisor_tin || '';
+
+          this.form.buildingOwner.signatureName = loadedData.building_owner_signature_name || '';
+          this.form.buildingOwner.date = loadedData.building_owner_date || '';
+          this.form.buildingOwner.address = loadedData.building_owner_address || '';
+          this.form.buildingOwner.ctcNo = loadedData.building_owner_ctc_no || '';
+          this.form.buildingOwner.dateIssued = loadedData.building_owner_date_issued || '';
+          this.form.buildingOwner.placeIssued = loadedData.building_owner_place_issued || '';
+
+          this.form.lotOwner.signatureName = loadedData.lot_owner_signature_name || '';
+          this.form.lotOwner.date = loadedData.lot_owner_date || '';
+          this.form.lotOwner.address = loadedData.lot_owner_address || '';
+          this.form.lotOwner.ctcNo = loadedData.lot_owner_ctc_no || '';
+          this.form.lotOwner.dateIssued = loadedData.lot_owner_date_issued || '';
+          this.form.lotOwner.placeIssued = loadedData.lot_owner_place_issued || '';
+
+          this.form.civilStructuralDocuments.designsComputations = !!parseInt(loadedData.civil_structural_designs_computations);
+          this.form.civilStructuralDocuments.billOfMaterials = !!parseInt(loadedData.civil_structural_bill_of_materials);
+          this.form.civilStructuralDocuments.proposedStartingDate = !!parseInt(loadedData.proposed_starting_date);
+          this.form.civilStructuralDocuments.costEstimates = !!parseInt(loadedData.civil_structural_cost_estimates);
+          this.form.civilStructuralDocuments.others = !!parseInt(loadedData.civil_structural_others);
+          this.form.civilStructuralDocuments.othersDetails = loadedData.civil_structural_others_details || '';
+
+          this.statusMessage = 'Previous data loaded successfully.';
+          this.messageColor = 'info';
+          this.showMessage = true;
+        } else {
+          console.log('No previous data found from server or error loading:', result.message);
+          // If no server data, check local storage for a draft
+          this.loadDraftFromLocalStorage();
+        }
+      } catch (error) {
+        console.error('Error loading form data from server:', error);
+        this.statusMessage = 'Error loading previous data from server. Checking local draft.';
+        this.messageColor = 'error';
+        this.showMessage = true;
+        this.loadDraftFromLocalStorage(); // Fallback to local storage if server load fails
+      }
+    },
+    async submitForm() {
+      const { valid } = await this.$refs.form.validate();
+      if (valid) {
+        console.log('Form is valid and attempting submission:', this.form);
+        try {
+          const response = await fetch('http://localhost/buildingpermitapplication/src/document/electrical-backend/electrical.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.form), // Send your form data as JSON
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            this.statusMessage = result.message;
+            this.messageColor = 'success';
+            this.showMessage = true;
+            console.log('Form submitted successfully:', result.message);
+            localStorage.removeItem('electricalPermitForm'); // Clear local storage on successful submission
+            this.resetForm(); // Reset form after successful submission
+          } else {
+            this.statusMessage = 'Submission failed: ' + result.message;
+            this.messageColor = 'error';
+            this.showMessage = true;
+            console.error('Form submission failed:', result.message);
+          }
+        } catch (error) {
+          this.statusMessage = 'An error occurred during submission. Please try again.';
+          this.messageColor = 'error';
+          this.showMessage = true;
+          console.error('Error during form submission:', error);
+        }
+      } else {
+        this.statusMessage = 'Please fill in all required fields.';
+        this.messageColor = 'warning';
+        this.showMessage = true;
+        console.log('Form is invalid. Please check the fields.');
+      }
+    },
+    resetForm() {
+      this.$refs.form.reset();
+      this.$refs.form.resetValidation();
+      // Manually reset specific fields or nested objects if `reset()` doesn't handle them fully
+      // This is crucial to ensure a clean slate after submission or explicit reset.
+      this.form = this.$options.data.apply(this).form; // Reset to initial data state
+      localStorage.removeItem('electricalPermitForm'); // Clear local storage on reset
+    },
+  },
+};
 </script>
 
 <style scoped>
-  /* Styles for plain input fields, typically used for official sections or static data */
-  .plain-input.v-text-field {
-    --v-input-control-height: auto; /* Allow content to dictate height */
-    --v-input-padding-top: 0;
-    --v-input-padding-bottom: 0;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    border-bottom: 1px solid #ccc; /* Underline for fields */
-  }
+/* Styles for plain input fields, typically used for official sections or static data */
+.plain-input.v-text-field {
+  --v-input-control-height: auto; /* Allow content to dictate height */
+  --v-input-padding-top: 0;
+  --v-input-padding-bottom: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid #ccc; /* Underline for fields */
+}
 
-  /* Remove default Vuetify input underline/border for plain variant */
-  .plain-input.v-text-field .v-input__control {
-    border-bottom: none !important;
-  }
+/* Remove default Vuetify input underline/border for plain variant */
+.plain-input.v-text-field .v-input__control {
+  border-bottom: none !important;
+}
 
-  .plain-input.v-text-field .v-field__overlay {
-    display: none;
-  }
+.plain-input.v-text-field .v-field__overlay {
+  display: none;
+}
 
-  /* New styles for static display fields to mimic screenshot */
-  .static-field-group {
-    margin-bottom: 16px; /* Spacing between static field groups */
-  }
+/* New styles for static display fields to mimic screenshot */
+.static-field-group {
+  margin-bottom: 16px; /* Spacing between static field groups */
+}
 
-  .static-line-label {
-    font-size: 0.75rem; /* Smaller font for labels, similar to screenshot */
-    color: rgba(0, 0, 0, 0.6); /* Lighter color for labels */
-    margin-bottom: 4px; /* Space between label and line */
-  }
+.static-line-label {
+  font-size: 0.75rem; /* Smaller font for labels, similar to screenshot */
+  color: rgba(0, 0, 0, 0.6); /* Lighter color for labels */
+  margin-bottom: 4px; /* Space between label and line */
+}
 
-  .static-line {
-    border-bottom: 1px solid #ccc; /* The underline */
-    padding-bottom: 2px; /* Space between text and line */
-    min-height: 24px; /* Ensure a minimum height for the line */
-  }
+.static-line {
+  border-bottom: 1px solid #ccc; /* The underline */
+  padding-bottom: 2px; /* Space between text and line */
+  min-height: 24px; /* Ensure a minimum height for the line */
+}
 
-  /* Styles for BOX 8 Progress Flow Table */
-  .progress-flow-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-    text-align: center;
-  }
+/* Styles for BOX 8 Progress Flow Table */
+.progress-flow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: center;
+}
 
-  .progress-flow-table th,
-  .progress-flow-table td {
-    border: 1px solid #000;
-    padding: 8px 4px;
-    vertical-align: middle;
-  }
+.progress-flow-table th,
+.progress-flow-table td {
+  border: 1px solid #000;
+  padding: 8px 4px;
+  vertical-align: middle;
+}
 
-  .progress-flow-table th.static-th {
-    background-color: #f0f0f0; /* Light background for headers */
-    font-weight: bold;
-  }
+.progress-flow-table th.static-th {
+  background-color: #f0f0f0; /* Light background for headers */
+  font-weight: bold;
+}
 
-  .progress-flow-table td.static-td-label {
-    text-align: left;
-    padding-left: 10px;
-    font-weight: bold;
-  }
+.progress-flow-table td.static-td-label {
+  text-align: left;
+  padding-left: 10px;
+  font-weight: bold;
+}
 
-  .progress-flow-table thead th {
-    padding: 8px 4px; /* Consistent padding for headers */
-  }
+.progress-flow-table thead th {
+  padding: 8px 4px; /* Consistent padding for headers */
+}
 
-  .progress-flow-table tbody tr:last-child td {
-    border-bottom: 1px solid #000; /* Ensure last row has bottom border */
-  }
+.progress-flow-table tbody tr:last-child td {
+  border-bottom: 1px solid #000; /* Ensure last row has bottom border */
+}
 
-  .progress-flow-table tbody tr td:last-child {
-    border-right: 1px solid #000; /* Ensure last column has right border */
-  }
+.progress-flow-table tbody tr td:last-child {
+  border-right: 1px solid #000; /* Ensure last column has right border */
+}
 
-  .border-bottom-dark {
-    border-bottom: 1px solid #000;
-  }
+.border-bottom-dark {
+  border-bottom: 1px solid #000;
+}
 
-  .border-right-dark {
-    border-right: 1px solid #000;
-  }
+.border-right-dark {
+  border-right: 1px solid #000;
+}
 
-  .centered-input .v-input__control {
-    text-align: center;
-  }
+.centered-input .v-input__control {
+  text-align: center;
+}
 </style>

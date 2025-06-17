@@ -52,25 +52,13 @@
 
         <v-divider class="my-6"></v-divider>
 
-        <p class="mb-4 text-subtitle-1">Ancillary Documents</p>
-
-        <div v-for="docOption in allDocumentUploadOptions" :key="docOption.value" class="mb-4">
-          <v-file-input
-            :label="`Upload ${docOption.label} (PDFs)`"
-            accept="application/pdf"
-            multiple
-            variant="outlined"
-            prepend-icon="mdi-paperclip"
-            clearable
-            v-model="uploadedAncillaryDocuments[docOption.value]"
-          ></v-file-input>
-        </div>
+        <!-- Ancillary document upload options removed as per request -->
       </v-card-text>
     </v-card>
 
     <v-row justify="end" class="mt-4">
       <v-col cols="auto">
-        <v-btn color="grey-darken-1" @click="goToPreviousStep" to="/DocumentForms">Previous Step</v-btn>
+        <v-btn color="grey-darken-1" to="/DocumentForms">Previous Step</v-btn>
       </v-col>
       <v-col cols="auto">
         <v-btn color="success" @click="finalizeApplication">Finalize Application</v-btn>
@@ -80,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -89,38 +77,113 @@ const router = useRouter();
 // Reactive state for uploaded files
 const unifiedApplicationPdf = ref([]);
 const generalClearancesPdf = ref([]);
-// Reactive object to store files for each ancillary document type
-const uploadedAncillaryDocuments = reactive({});
 
-// All possible ancillary document upload options
-const allDocumentUploadOptions = [
-  { label: "Architectural Documents", value: "architectural" },
-  { label: "Civil/Structural Documents", value: "civil_structural" },
-  { label: "Electrical Documents", value: "electrical" },
-  { label: "Sanitary Documents", value: "sanitary" },
-  { label: "Plumbing Documents", value: "plumbing" },
-  { label: "Mechanical Documents", value: "mechanical" },
-  { label: "Electronics Documents", value: "electronics" },
-  { label: "Geodetic Documents", value: "geodetic" },
-];
+// Watch for changes in unifiedApplicationPdf and save to localStorage
+watch(unifiedApplicationPdf, (newValue) => {
+  if (newValue && newValue.length > 0) {
+    const fileNames = newValue.map(file => file.name);
+    localStorage.setItem('unifiedApplicationPdfNames', JSON.stringify(fileNames));
+  } else {
+    localStorage.removeItem('unifiedApplicationPdfNames');
+  }
+}, { deep: true });
 
-// Initialize all ancillary document upload models on component mount
+// Watch for changes in generalClearancesPdf and save to localStorage
+watch(generalClearancesPdf, (newValue) => {
+  if (newValue && newValue.length > 0) {
+    const fileNames = newValue.map(file => file.name);
+    localStorage.setItem('generalClearancesPdfNames', JSON.stringify(fileNames));
+  } else {
+    localStorage.removeItem('generalClearancesPdfNames');
+  }
+}, { deep: true });
+
+
+// Initialize all ancillary document upload models on component mount - Adjusted
 onMounted(() => {
-  allDocumentUploadOptions.forEach(option => {
-    uploadedAncillaryDocuments[option.value] = [];
-  });
+  // First, attempt to load file names from localStorage for a "draft" state
+  loadDraftFromLocalStorage();
+  // Then, load previously uploaded documents from the backend (source of truth)
+  loadUploadedDocuments();
 });
+
+// Function to load file names from localStorage
+const loadDraftFromLocalStorage = () => {
+  const savedUnifiedNames = localStorage.getItem('unifiedApplicationPdfNames');
+  if (savedUnifiedNames) {
+    try {
+      const parsedNames = JSON.parse(savedUnifiedNames);
+      // Recreate File objects only with the name for display purposes
+      unifiedApplicationPdf.value = parsedNames.map(name => new File([], name));
+    } catch (e) {
+      console.error("Error parsing unifiedApplicationPdfNames from localStorage:", e);
+      localStorage.removeItem('unifiedApplicationPdfNames');
+    }
+  }
+
+  const savedGeneralNames = localStorage.getItem('generalClearancesPdfNames');
+  if (savedGeneralNames) {
+    try {
+      const parsedNames = JSON.parse(savedGeneralNames);
+      // Recreate File objects only with the name for display purposes
+      generalClearancesPdf.value = parsedNames.map(name => new File([], name));
+    } catch (e) {
+      console.error("Error parsing generalClearancesPdfNames from localStorage:", e);
+      localStorage.removeItem('generalClearancesPdfNames');
+    }
+  }
+};
+
 
 const goToPreviousStep = () => {
   // Navigate back to DocumentForms, preserving prepopulated data
   router.push({
-    path: '/', // Adjust this path if your DocumentForms component is on a different route, e.g., '/document-forms'
+    path: '/DocumentForms', // Ensure this matches your DocumentForms route
     query: {
       applicantFullName: route.query.applicantFullName,
       projectFullAddress: route.query.projectFullAddress,
       // No need to pass selectedDocuments back for dynamic generation in this approach
     }
   });
+};
+
+const loadUploadedDocuments = async () => {
+  try {
+    const response = await fetch('http://localhost/buildingpermitapplication/src/pages/Upload-Backend/upload.php', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success && result.data) {
+        const loadedData = result.data;
+        console.log("Loaded data from backend:", loadedData);
+
+        // Populate unified and general clearances from backend (overwriting localStorage draft if backend has data)
+        if (loadedData.unified_application_pdf_paths && loadedData.unified_application_pdf_paths.length > 0) {
+          unifiedApplicationPdf.value = loadedData.unified_application_pdf_paths.map(path => new File([], path.split('/').pop()));
+        } else {
+          unifiedApplicationPdf.value = []; // Explicitly clear if backend sends empty
+        }
+        if (loadedData.general_clearances_pdf_paths && loadedData.general_clearances_pdf_paths.length > 0) {
+          generalClearancesPdf.value = loadedData.general_clearances_pdf_paths.map(path => new File([], path.split('/').pop()));
+        } else {
+          generalClearancesPdf.value = []; // Explicitly clear if backend sends empty
+        }
+
+        console.log("Documents loaded from backend.");
+      } else {
+        console.log("No previous upload data found from backend or error:", result.message);
+      }
+    } else {
+      console.error("Failed to load documents from backend:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error fetching documents:", error);
+  }
 };
 
 const finalizeApplication = async () => {
@@ -131,51 +194,47 @@ const finalizeApplication = async () => {
   // Append Unified Application PDF(s)
   if (unifiedApplicationPdf.value.length > 0) {
     unifiedApplicationPdf.value.forEach((file) => {
-      formData.append('unifiedApplicationForm', file);
+      formData.append('unifiedApplicationForm[]', file); // Use array notation for multiple files
     });
+  } else {
+    // Explicitly append an empty string if no files are selected to signal backend to clear
+    formData.append('unifiedApplicationForm[]', '');
   }
 
   // Append General Clearances PDF(s)
   if (generalClearancesPdf.value.length > 0) {
     generalClearancesPdf.value.forEach((file) => {
-      formData.append('generalClearances', file);
+      formData.append('generalClearances[]', file); // Use array notation for multiple files
     });
+  } else {
+    // Explicitly append an empty string if no files are selected to signal backend to clear
+    formData.append('generalClearances[]', '');
   }
 
-  // Append all Ancillary Documents that have files attached
-  for (const docType in uploadedAncillaryDocuments) {
-    if (uploadedAncillaryDocuments[docType] && uploadedAncillaryDocuments[docType].length > 0) {
-      uploadedAncillaryDocuments[docType].forEach((file) => {
-        // Use a consistent naming convention for backend: e.g., 'architecturalFiles[]'
-        formData.append(`${docType}Files[]`, file);
-      });
-    }
-  }
-
-  // Optionally, append other data like applicant info if not already sent
+  // Append other data like applicant info if not already sent
   formData.append('applicantFullName', route.query.applicantFullName || '');
   formData.append('projectFullAddress', route.query.projectFullAddress || '');
-  // You might still want to send which types were *expected* even if all fields are shown
-  // This depends on how your backend processes the submission.
-  // If the "selectedDocuments" from the previous step is still relevant for backend logic,
-  // ensure it's passed here, or derive it from the uploaded files.
 
-  // --- Example: Sending data to a mock API endpoint ---
-  // In a real application, you'd replace this with your actual backend API call.
   try {
-    // Replace '/api/upload-documents' with your actual backend endpoint
-    const response = await fetch('/api/upload-documents', {
+    const response = await fetch('http://localhost/buildingpermitapplication/src/pages/Upload-Backend/upload.php', {
       method: 'POST',
       body: formData,
       // The 'Content-Type': 'multipart/form-data' header is usually
-      // automatically set by the browser when you use FormData.
+      // automatically set by the browser when you use FormData, so don't set it manually.
     });
 
     if (response.ok) {
       const result = await response.json();
       alert("Application submitted successfully!");
       console.log("Upload successful:", result);
-      // Redirect to a success page or provide further instructions
+
+      // Clear localStorage for these files upon successful submission
+      localStorage.removeItem('unifiedApplicationPdfNames');
+      localStorage.removeItem('generalClearancesPdfNames');
+
+      // Optionally, clear the form refs or navigate to a success page here
+      // unifiedApplicationPdf.value = [];
+      // generalClearancesPdf.value = [];
       // router.push('/application-success');
     } else {
       const errorData = await response.json();

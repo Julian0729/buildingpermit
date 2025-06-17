@@ -72,11 +72,8 @@ const router = useRouter();
 
 const emit = defineEmits(['update:selected-documents', 'next-step', 'previous-step']);
 
-// `selectedDocuments` will track which forms have been accessed or 'completed'
 const selectedDocuments = defineModel('selectedDocuments', { type: Array, required: true, default: () => [] });
 
-// New reactive state to track truly completed documents
-// Using a Set for efficient add/check operations
 const completedDocuments = ref(new Set());
 
 const prepopulatedData = reactive({
@@ -84,7 +81,6 @@ const prepopulatedData = reactive({
   projectFullAddress: '',
 });
 
-// NEW: Ref to store the application number received from the Unified Form
 const applicationNumber = ref('');
 
 const documentChecklistOptions = [
@@ -92,41 +88,37 @@ const documentChecklistOptions = [
   { label: "Civil/Structural Documents", value: "structural", icon: "mdi-hammer-wrench" },
   { label: "Electrical Documents", value: "electrical", icon: "mdi-lightning-bolt" },
   { label: "Sanitary Documents", value: "sanitary", icon: "mdi-faucet" },
-  { label: "Plumbing Documents", value: "sanitary", icon: "mdi-pipe-wrench" },
+  
   { label: "Mechanical Documents", value: "mechanical", icon: "mdi-fan" },
   { label: "Electronics Documents", value: "electronics", icon: "mdi-television-classic" },
 ];
 
-// Determine if a document is completed
 const isDocumentCompleted = (docValue) => {
   return completedDocuments.value.has(docValue);
 };
 
-// Function to determine the icon color based on completion status
 const getIconColor = (docValue) => {
   if (isDocumentCompleted(docValue)) {
-    return 'success'; // Green for completed
+    return 'success';
   } else if (selectedDocuments.value.includes(docValue)) {
-    return 'primary'; // Blue for selected/visited (but not yet completed)
+    return 'primary';
   }
-  return 'grey'; // Grey for unvisited
+  return 'grey';
 };
 
-// Function to navigate to the specific document form page
 const navigateToDocumentForm = (docType) => {
-  // Add the document type to selectedDocuments if not already present.
   if (!selectedDocuments.value.includes(docType)) {
     selectedDocuments.value.push(docType);
   }
 
-  // --- CRITICAL FIX HERE: Pass applicationNumber as a route param ---
+  // --- FIX HERE: Pass applicationNumber as a ROUTE PARAMETER ---
   router.push({
-    name: docType, // Use the route name (e.g., 'architectural')
+    name: docType,
     params: {
-      applicationNumber: applicationNumber.value, // <--- NOW IT'S A ROUTE PARAMETER
+      applicationNumber: applicationNumber.value, // <--- IMPORTANT: This sends it as a route parameter
     },
     query: {
-      // Keep other data as query parameters if they are not part of the route path
+      // Keep other data as query parameters
       applicantFullName: prepopulatedData.applicantFullName,
       projectFullAddress: prepopulatedData.projectFullAddress,
       selectedDocuments: JSON.stringify(selectedDocuments.value),
@@ -148,15 +140,12 @@ const goToNextStep = () => {
   });
 };
 
-// This function would be called by the individual document forms upon successful submission
 const markDocumentAsCompleted = (docType) => {
   completedDocuments.value.add(docType);
 };
 
-// Lifecycle hook to read query parameters when the component is mounted
 onMounted(() => {
   // Read applicationNumber from query (coming from Unified Application Form)
-  // This part is still correct as the UnifiedForm might pass it as a query initially
   if (route.query.applicationNumber) {
     applicationNumber.value = route.query.applicationNumber;
     console.log("DocumentForms: Successfully received application number from query:", applicationNumber.value);
@@ -171,7 +160,6 @@ onMounted(() => {
     prepopulatedData.projectFullAddress = route.query.projectFullAddress;
   }
 
-  // Restore selectedDocuments from query
   if (route.query.selectedDocuments) {
     try {
       selectedDocuments.value = JSON.parse(route.query.selectedDocuments);
@@ -180,7 +168,6 @@ onMounted(() => {
     }
   }
 
-  // Restore completedDocuments from query (coming back from a form)
   if (route.query.completedDocuments) {
     try {
       const storedCompleted = JSON.parse(route.query.completedDocuments);
