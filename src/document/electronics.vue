@@ -786,7 +786,7 @@
             Reset Form
           </v-btn>
           <v-btn color="blue-darken-3" @click="submitForm" :disabled="!valid">
-            Submit Application
+            Download Form
           </v-btn>
         </v-col>
       </v-row>
