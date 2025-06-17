@@ -374,7 +374,8 @@
             <v-text-field
               label="Total Floor Area (sq.m.)"
               v-model="totalFloorArea.value.value"
-              onkeypress="return (event.charCode > 47 && event.charCode < 58 || event.charCode === 46)"
+              onkeypress="return (event.charCode > 47 && event.charCode < 58 ||
+                event.charCode === 46)"
               inputmode="numeric"
               pattern="[0-9]*[.]?[0-9]*"
               density="compact"
@@ -400,51 +401,66 @@
           <v-col cols="12" md="4">
             <v-text-field
               label="Building"
-              v-model="costBuildingFormatted"
+              v-model="displayCostBuilding"
+              @focus="onCostFocus(costBuilding, displayCostBuilding)"
+              @blur="onCostBlur(costBuilding, displayCostBuilding)"
               density="compact"
               variant="outlined"
               prefix="₱"
               :error-messages="costBuilding.errorMessage.value"
+              inputmode="decimal"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="4">
             <v-text-field
               label="Electrical"
-              v-model="costElectricalFormatted"
+              v-model="displayCostElectrical"
+              @focus="onCostFocus(costElectrical, displayCostElectrical)"
+              @blur="onCostBlur(costElectrical, displayCostElectrical)"
               density="compact"
               variant="outlined"
               prefix="₱"
               :error-messages="costElectrical.errorMessage.value"
+              inputmode="decimal"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="4">
             <v-text-field
               label="Mechanical"
-              v-model="costMechanicalFormatted"
+              v-model="displayCostMechanical"
+              @focus="onCostFocus(costMechanical, displayCostMechanical)"
+              @blur="onCostBlur(costMechanical, displayCostMechanical)"
               density="compact"
               variant="outlined"
               prefix="₱"
               :error-messages="costMechanical.errorMessage.value"
+              inputmode="decimal"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
               label="Electronics"
-              v-model="costElectronicsFormatted"
+              v-model="displayCostElectronics"
+              @focus="onCostFocus(costElectronics, displayCostElectronics)"
+              @blur="onCostBlur(costElectronics, displayCostElectronics)"
               density="compact"
               variant="outlined"
               prefix="₱"
               :error-messages="costElectronics.errorMessage.value"
+              inputmode="decimal"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field
               label="Plumbing"
-              v-model="costPlumbingFormatted"
+              v-model="displayCostPlumbing"
+              @focus="onCostFocus(costPlumbing, displayCostPlumbing)"
+              @blur="onCostBlur(costPlumbing, displayCostPlumbing)"
               density="compact"
               variant="outlined"
               prefix="₱"
               :error-messages="costPlumbing.errorMessage.value"
+              inputmode="decimal"
             ></v-text-field>
           </v-col>
           <v-col cols="12" md="6">
@@ -465,11 +481,14 @@
           <v-col cols="12" md="6">
             <v-text-field
               label="P (Equipment)"
-              v-model="costEquipmentFormatted"
+              v-model="displayCostEquipment"
+              @focus="onCostFocus(costEquipment, displayCostEquipment)"
+              @blur="onCostBlur(costEquipment, displayCostEquipment)"
               density="compact"
               variant="outlined"
               prefix="₱"
               :error-messages="costEquipment.errorMessage.value"
+              inputmode="decimal"
             ></v-text-field>
           </v-col>
 
@@ -862,7 +881,6 @@
               </v-card-text>
             </v-card>
           </v-col>
-
           <v-row justify="end" class="mt-4">
             <v-col cols="auto">
               <v-btn color="grey-darken-1" @click="handleReset"
@@ -875,35 +893,37 @@
           </v-row>
         </v-row>
       </v-form>
-
-      <v-dialog v-model="showCompletionDialog" max-width="500px" persistent>
-        <v-card class="pa-6 text-center">
-          <v-card-title class="text-h5 text-blue-darken-2 mb-4">
-            <v-icon color="success" size="48">mdi-check-circle-outline</v-icon>
-            Application Complete!
-          </v-card-title>
-          <v-card-text>
-            <p class="text-h6 mb-2">Your Application Number is</p>
-            <p class="text-h4 font-weight-bold text-blue-darken-2 mb-6">
-              {{ generatedApplicationNumber }}
-            </p>
-          </v-card-text>
-          <v-card-actions class="justify-end">
-            <v-btn color="primary" @click="continueToDocumentForms" class="mr-2"
-              >Continue to Document Forms</v-btn
-            >
-            <v-btn color="secondary" @click="handleDownload"
-              >Download Form</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </v-card>
+    <v-dialog v-model="showCompletionDialog" max-width="500px" persistent>
+      <v-card class="pa-6 text-center">
+        <v-card-title class="text-h5 text-blue-darken-2 mb-4">
+          <v-icon color="success" size="48">mdi-check-circle-outline</v-icon>
+          Application Complete!
+        </v-card-title>
+        <v-card-text>
+          <p class="text-h6 mb-2">Your Application Number is</p>
+          <p class="text-h4 font-weight-bold text-blue-darken-2 mb-6">
+            {{ generatedApplicationNumber }}
+          </p>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            color="primary"
+            @click="continueToDocumentForms"
+            class="mr-2"
+            >Continue to Document Forms</v-btn
+          >
+          <v-btn color="secondary" @click="handleDownload"
+            >Download Form</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, watchEffect } from "vue";
 import { useField, useForm } from "vee-validate";
 import { useRouter } from "vue-router";
 
@@ -975,9 +995,7 @@ const constructionMunicipal = useField("constructionMunicipal", required, {
 });
 
 // Scope of Work
-const scopeOfWork = useField("scopeOfWork", requiredArray, {
-  initialValue: [],
-});
+const scopeOfWork = useField("scopeOfWork", requiredArray, { initialValue: [], });
 const otherScopeOfWork = useField("otherScopeOfWork", (value) => {
   if (
     scopeOfWork.value.value &&
@@ -1004,7 +1022,7 @@ const numberOfStorey = useField("numberOfStorey", required);
 const totalFloorArea = useField("totalFloorArea", required);
 const lotArea = useField("lotArea", required);
 
-// TOTAL ESTIMATED COST
+// TOTAL ESTIMATED COST - These are the internal numeric values managed by VeeValidate
 const costBuilding = useField("costBuilding", required);
 const costElectrical = useField("costElectrical", required);
 const costMechanical = useField("costMechanical", required);
@@ -1021,31 +1039,23 @@ const expectedDate = useField("expectedDate", required);
 // These fields are not part of the "required sections" for initial submission but are kept for completeness
 // Ensure they are properly bound in the template with v-model and reflect their useField names.
 const inspectorAddress = useField("inspectorAddress");
-// const architectCivilEngineerName = useField("architectCivilEngineerName"); // This field doesn't appear to be directly in the template
-// const architectEngineerSignatureDate = useField(
-//   "architectEngineerSignatureDate"
-// ); // This field doesn't appear to be directly in the template
 const prcNo = useField("prcNo");
-// const prcValidity = useField("prcValidity"); // This field doesn't appear to be directly in the template
 const ptrNo = useField("ptrNo");
 const ptrDateIssued = useField("ptrDateIssued");
 const ptrIssuedAt = useField("ptrIssuedAt");
 const inspectorTin = useField("inspectorTin");
 
-// const box3ApplicantName = useField("box3ApplicantName"); // This field doesn't appear to be directly in the template
 const box3ApplicantSignatureDate = useField("box3ApplicantSignatureDate");
 const box3ApplicantAddress = useField("box3ApplicantAddress");
 const box3ApplicantGovtIdNo = useField("box3ApplicantGovtIdNo");
 const box3ApplicantIdDateIssued = useField("box3ApplicantIdDateIssued");
 const box3ApplicantIdPlaceIssued = useField("box3ApplicantIdPlaceIssued");
 
-// const box4LotOwnerRepName = useField("box4LotOwnerRepName"); // This field doesn't appear to be directly in the template
 const box4LotOwnerRepSignatureDate = useField("box4LotOwnerRepSignatureDate");
 const box4LotOwnerRepAddress = useField("box4LotOwnerRepAddress");
 const box4LotOwnerRepGovtIdNo = useField("box4LotOwnerRepGovtIdNo");
 const box4LotOwnerRepIdDateIssued = useField("box4LotOwnerRepIdDateIssued");
 const box4LotOwnerRepIdPlaceIssued = useField("box4LotOwnerRepIdPlaceIssued");
-
 
 // --- Options for Combo Boxes (from your original code) ---
 const scopeOfWorkOptions = [
@@ -1063,6 +1073,7 @@ const scopeOfWorkOptions = [
   "DEMOLITION",
   "Others",
 ];
+
 const occupancyTypesByGroup = {
   "GROUP A: RESIDENTIAL (DWELLINGS)": [
     "Single",
@@ -1135,14 +1146,14 @@ const occupancyTypesByGroup = {
     "Others",
   ],
 };
-const occupancyGroupOptions = computed(() =>
-  Object.keys(occupancyTypesByGroup)
-);
+
+const occupancyGroupOptions = computed(() => Object.keys(occupancyTypesByGroup));
 const currentOccupancyTypeOptions = computed(() => {
   return occupancyGroup.value.value
     ? occupancyTypesByGroup[occupancyGroup.value.value]
     : [];
 });
+
 watch(
   () => occupancyGroup.value.value,
   (newGroup, oldGroup) => {
@@ -1152,6 +1163,7 @@ watch(
     }
   }
 );
+
 watch(
   () => occupancyType.value.value,
   (newType) => {
@@ -1160,6 +1172,7 @@ watch(
     }
   }
 );
+
 const barangayOptions = [
   "Abella",
   "Bagumbayan Norte",
@@ -1188,6 +1201,7 @@ const barangayOptions = [
   "Tinago",
   "Triangulo ",
 ];
+
 const rawStreetOptions = [
   "Magsaysay Highway (3)",
   "Riversway Street",
@@ -1230,8 +1244,8 @@ const rawStreetOptions = [
   "Molave",
   "San Leandro City",
   "Molave Road",
-  "San Martin",
   "Molave St",
+  "San Martin",
   "San Martin",
   "Mother Francisca",
   "Naga Central Road",
@@ -1271,7 +1285,6 @@ const rawStreetOptions = [
   "Tindalo",
   "Peniafrancia Av. (1)",
   "Topaz",
-  "Peninsula",
   "V. Belarmino St",
   "Perpetual Help",
   "V. Lukban St",
@@ -1291,349 +1304,283 @@ const rawStreetOptions = [
 const streetOptions = computed(() => {
   const uniqueStreets = new Set();
   rawStreetOptions.forEach((street) => {
-    const cleanedStreet = street.replace(/\s*\(\d+\)$/, "").trim();
-    uniqueStreets.add(cleanedStreet);
+    uniqueStreets.add(street.replace(/\s*\(\d+\)$/, ""));
   });
   return Array.from(uniqueStreets).sort();
 });
 
-// Function to generate a random numeric string for application number
-const generateRandomNumber = (length) => {
-  const characters = "0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
+// Utility functions for currency formatting and parsing
+const formatCurrency = (value) => {
+  // If the value is effectively zero, null, undefined, or NaN, return an empty string
+  if (value === null || value === undefined || isNaN(Number(value)) || Number(value) === 0) return "";
+  
+  const numberValue = Number(value);
+
+  // Check if the number has a fractional part (i.e., not an integer)
+  if (numberValue % 1 !== 0) {
+    // If it has a fractional part, format with 2 decimal places
+    return numberValue.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  } else {
+    // If it's a whole number, format with no decimal places
+    return numberValue.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
   }
-  return result;
 };
 
-// Function to generate a random alphanumeric string for password
-const generateRandomAlphanumericString = (length) => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
+const parseCurrency = (formattedValue) => {
+  if (!formattedValue) return 0;
+  // Remove commas and parse to float
+  const numberValue = parseFloat(formattedValue.toString().replace(/,/g, ""));
+  return isNaN(numberValue) ? 0 : numberValue;
 };
 
-// --- Local Storage Logic ---
-// Save form values to local storage whenever they change
-watch(formValues, (newValues) => {
-  try {
-    // Combine vee-validate form values with other reactive refs like isEnterpriseOwned
-    const combinedState = {
-      ...newValues,
-      isEnterpriseOwned: isEnterpriseOwned.value,
-    };
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(combinedState));
-  } catch (e) {
-    console.error("Error saving to localStorage:", e);
-  }
-}, { deep: true }); // Use deep watch for nested objects
+// Refs for the values displayed in the input fields (string format)
+const displayCostBuilding = ref(null);
+const displayCostElectrical = ref(null);
+const displayCostMechanical = ref(null);
+const displayCostElectronics = ref(null);
+const displayCostPlumbing = ref(null);
+const displayCostEquipment = ref(null);
 
-// Load form values from local storage when the component is mounted
-onMounted(() => {
-  try {
-    const savedForm = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedForm) {
-      const parsedForm = JSON.parse(savedForm);
-      setValues(parsedForm); // Set all form values from local storage
+// Function to handle focus event on cost inputs
+const onCostFocus = (fieldRef, displayRef) => {
+  const rawValue = parseCurrency(fieldRef.value.value);
+  // Show empty string if rawValue is 0, otherwise show the raw number as string
+  displayRef.value = rawValue === 0 ? '' : rawValue.toString();
+};
 
-      // Special handling for isEnterpriseOwned as it's a separate ref
-      if (typeof parsedForm.isEnterpriseOwned !== 'undefined') {
-        isEnterpriseOwned.value = parsedForm.isEnterpriseOwned;
-      }
-    }
-  } catch (e) {
-    console.error("Error loading from localStorage:", e);
-    // Optionally, clear invalid data from local storage if parsing fails
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-  }
+// Function to handle blur event on cost inputs
+const onCostBlur = (fieldRef, displayRef) => {
+  // Parse the display value and update the actual field's value (VeeValidate field)
+  const parsedValue = parseCurrency(displayRef.value);
+  fieldRef.value.value = parsedValue;
+
+  // Then, format the display value for presentation
+  displayRef.value = formatCurrency(parsedValue);
+};
+
+// Initialize display values on component mount and whenever the underlying useField values change
+watchEffect(() => {
+  // This ensures that when the form loads or resets, the display fields show formatted numbers
+  displayCostBuilding.value = formatCurrency(costBuilding.value.value);
+  displayCostElectrical.value = formatCurrency(costElectrical.value.value);
+  displayCostMechanical.value = formatCurrency(costMechanical.value.value);
+  displayCostElectronics.value = formatCurrency(costElectronics.value.value);
+  displayCostPlumbing.value = formatCurrency(costPlumbing.value.value);
+  displayCostEquipment.value = formatCurrency(costEquipment.value.value);
 });
 
-// Custom handleReset function to clear both the form and local storage
-const customHandleReset = () => {
-  resetForm(); // Reset form values using vee-validate's resetForm
-  isEnterpriseOwned.value = false; // Manually reset other refs if needed
-  localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear local storage
-  console.log("Form has been reset and local storage cleared.");
-};
 
+// Updated totalEstimatedCost to include costEquipment
+const totalEstimatedCost = computed(() => {
+  return (
+    parseCurrency(costBuilding.value.value) +
+    parseCurrency(costElectrical.value.value) +
+    parseCurrency(costMechanical.value.value) +
+    parseCurrency(costElectronics.value.value) +
+    parseCurrency(costPlumbing.value.value) +
+    parseCurrency(costEquipment.value.value) // Include costEquipment here
+  );
+});
+
+const totalEstimatedCostFormatted = computed(() =>
+  formatCurrency(totalEstimatedCost.value)
+);
+
+// Function to generate a random alphanumeric string for application number and password
+const generateRandomString = (length) => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0987654321";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
 
 // Handle form submission
 const submitUnifiedApplication = handleSubmit(async (values) => {
-  // This block will only be executed if the form is valid according to the defined rules
-  console.log("Unified Application Form Submitted:", values);
+  console.log("Form submitted successfully!", values);
 
-  // Generate application number (numeric) and password (alphanumeric)
-  generatedApplicationNumber.value = generateRandomNumber(10); // e.g., 10-digit number
-  generatedPassword.value = generateRandomAlphanumericString(8);
+  // Generate application number and password
+  generatedApplicationNumber.value = generateRandomString(10);
+  generatedPassword.value = generateRandomString(8);
 
-  // Prepare the data to be sent to the backend
-  const dataToSend = {
-    generatedApplicationNumber: generatedApplicationNumber.value,
-    generatedPassword: generatedPassword.value,
-    applicationDetails: {
-      applicationType: values.applicationType,
-      applicationStatus: values.applicationStatus,
-      // For multi-select, vee-validate `values` already gives an array
-      scopeOfWork: values.scopeOfWork,
-      otherScopeOfWork: values.otherScopeOfWork,
-      occupancyGroup: values.occupancyGroup,
-      occupancyType: values.occupancyType,
-      otherOccupancyType: values.otherOccupancyType,
-    },
-    ownerApplicantInfo: {
-      firstName: values.firstName,
-      middleName: values.middleName,
-      lastName: values.lastName,
-      tin: values.tin,
-      isEnterpriseOwned: isEnterpriseOwned.value, // This is a separate ref, not part of `values`
-      formOwnership: values.formOwnership,
-      ownerAddressNo: values.ownerAddressNo,
-      ownerAddressStreet: values.ownerAddressStreet,
-      ownerAddressBarangay: values.ownerAddressBarangay,
-      ownerAddressMunicipal: values.ownerAddressMunicipal,
-      ownerAddressZipCode: values.ownerAddressZipCode,
-      contactNumber: values.contactNumber,
-    },
-    constructionLocation: {
-      lotNo: values.lotNo,
-      blkNo: values.blkNo,
-      tctNo: values.tctNo,
-      taxDecNo: values.taxDecNo,
-      constructionStreet: values.constructionStreet,
-      constructionBarangay: values.constructionBarangay,
-      constructionMunicipal: values.constructionMunicipal,
-    },
-    occupancyDetails: {
-      occupancyClassified: values.occupancyClassified,
-      numberOfUnits: values.numberOfUnits,
-      numberOfStorey: values.numberOfStorey,
-      totalFloorArea: values.totalFloorArea,
-      lotArea: values.lotArea,
-    },
-    estimatedCosts: {
-      costBuilding: values.costBuilding,
-      costElectrical: values.costElectrical,
-      costMechanical: values.costMechanical,
-      costElectronics: values.costElectronics,
-      costPlumbing: values.costPlumbing,
-      costEquipment: values.costEquipment,
-    },
-    projectTimeline: {
-      proposedDate: values.proposedDate,
-      expectedDate: values.expectedDate,
-    },
-    // Include the acknowledgment/notary public fields.
-    // Ensure these useField names match the 'name' attribute in your HTML template
-    inspectorAddress: values.inspectorAddress,
-    // architectCivilEngineerName: values.architectCivilEngineerName, // Not directly in template with v-model, skipped
-    // architectEngineerSignatureDate: values.architectEngineerSignatureDate, // Not directly in template with v-model, skipped
-    prcNo: values.prcNo,
-    // prcValidity: values.prcValidity, // Not directly in template with v-model, skipped
-    ptrNo: values.ptrNo,
-    ptrDateIssued: values.ptrDateIssued,
-    ptrIssuedAt: values.ptrIssuedAt,
-    inspectorTin: values.inspectorTin,
+  // Show the completion dialog
+  showCompletionDialog.value = true;
 
-    // box3ApplicantName: values.box3ApplicantName, // Not directly in template with v-model, skipped
-    box3ApplicantSignatureDate: values.box3ApplicantSignatureDate,
-    box3ApplicantAddress: values.box3ApplicantAddress,
-    box3ApplicantGovtIdNo: values.box3ApplicantGovtIdNo,
-    box3ApplicantIdDateIssued: values.box3ApplicantIdDateIssued,
-    box3ApplicantIdPlaceIssued: values.box3ApplicantIdPlaceIssued,
+  // Clear form data from local storage after successful submission
+  clearFormData();
 
-    // box4LotOwnerRepName: values.box4LotOwnerRepName, // Not directly in template with v-model, skipped
-    box4LotOwnerRepSignatureDate: values.box4LotOwnerRepSignatureDate,
-    box4LotOwnerRepAddress: values.box4LotOwnerRepAddress,
-    box4LotOwnerRepGovtIdNo: values.box4LotOwnerRepGovtIdNo,
-    box4LotOwnerRepIdDateIssued: values.box4LotOwnerRepIdDateIssued,
-    box4LotOwnerRepIdPlaceIssued: values.box4LotOwnerRepIdPlaceIssued,
-
-    // Acknowledgment/Notary Public fields from Box 5 are currently not bound to `useField`
-    // in your template, so they won't be in `values`. If you need to send them,
-    // you would need to add `v-model` and corresponding `useField` definitions.
-    // Example:
-    // municipalityOfSS: values.municipalityOfSS,
-    // beforeMeMunicipality: values.beforeMeMunicipality,
-    // beforeMeDate: values.beforeMeDate,
-    // applicantGovtIdNoAck: values.applicantGovtIdNoAck,
-    // ...etc.
-  };
-
-  try {
-    const response = await fetch(
-      "http://localhost/buildingpermitapplication/src/pages/Unified-Backend/unifiedbackend.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      }
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-      console.log("Backend success:", result.message);
-      // Show the completion dialog upon successful submission
-      showCompletionDialog.value = true;
-      // *** IMPORTANT CHANGE: Removed localStorage.removeItem(LOCAL_STORAGE_KEY) here ***
-      // This ensures data persists even after successful submission.
-      // The user can now manually clear it with the "Reset Form" button if they wish.
-
-      // *** ONLY NAVIGATE AFTER SUCCESSFUL BACKEND SAVE ***
-      // Call continueToDocumentForms here, after the await for response
-      // This ensures the data is in the database before the next page tries to fetch it.
-      // This will be triggered once the dialog is closed or by a separate action.
-    } else {
-      console.error("Backend error:", result.message);
-      // In a real application, you would show a user-friendly modal or message
-      console.error("Error submitting application: " + result.message);
-    }
-  } catch (error) {
-    console.error("Network or fetch error:", error);
-    // In a real application, you would show a user-friendly modal or message
-    console.error("Could not connect to the server. Please try again.");
-  }
+  // Reset the form after successful submission (this will use the explicit values in handleReset)
+  handleReset();
 });
 
-// Function to handle downloading the main form data (optional, but good for completeness)
-const handleDownload = () => {
-  // Use formValues directly for download, as it holds the current state of all bound fields
-  const dataToDownload = {
-    applicationDetails: {
-      applicationType: formValues.applicationType,
-      applicationStatus: formValues.applicationStatus,
-      scopeOfWork: formValues.scopeOfWork,
-      otherScopeOfWork: formValues.otherScopeOfWork,
-      occupancyGroup: formValues.occupancyGroup,
-      occupancyType: formValues.occupancyType,
-      otherOccupancyType: formValues.otherOccupancyType,
-    },
-    ownerApplicantInfo: {
-      firstName: formValues.firstName,
-      middleName: formValues.middleName,
-      lastName: formValues.lastName,
-      tin: formValues.tin,
-      isEnterpriseOwned: isEnterpriseOwned.value, // Use the ref directly
-      formOwnership: formValues.formOwnership,
-      ownerAddressNo: formValues.ownerAddressNo,
-      ownerAddressStreet: formValues.ownerAddressStreet,
-      ownerAddressBarangay: formValues.ownerAddressBarangay,
-      ownerAddressMunicipal: formValues.ownerAddressMunicipal,
-      ownerAddressZipCode: formValues.ownerAddressZipCode,
-      contactNumber: formValues.contactNumber,
-    },
-    constructionLocation: {
-      lotNo: formValues.lotNo,
-      blkNo: formValues.blkNo,
-      tctNo: formValues.tctNo,
-      taxDecNo: formValues.taxDecNo,
-      constructionStreet: formValues.constructionStreet,
-      constructionBarangay: formValues.constructionBarangay,
-      constructionMunicipal: formValues.constructionMunicipal,
-    },
-    occupancyDetails: {
-      occupancyClassified: formValues.occupancyClassified,
-      numberOfUnits: formValues.numberOfUnits,
-      numberOfStorey: formValues.numberOfStorey,
-      totalFloorArea: formValues.totalFloorArea,
-      lotArea: formValues.lotArea,
-    },
-    estimatedCosts: {
-      costBuilding: formValues.costBuilding,
-      costElectrical: formValues.costElectrical,
-      costMechanical: formValues.costMechanical,
-      costElectronics: formValues.costElectronics,
-      costPlumbing: formValues.costPlumbing,
-      costEquipment: formValues.costEquipment,
-    },
-    projectTimeline: {
-      proposedDate: formValues.proposedDate,
-      expectedDate: formValues.expectedDate,
-    },
-    // Include acknowledgment fields from formValues if they are bound via useField
-    inspectorAddress: formValues.inspectorAddress,
-    prcNo: formValues.prcNo,
-    ptrNo: formValues.ptrNo,
-    ptrDateIssued: formValues.ptrDateIssued,
-    ptrIssuedAt: formValues.ptrIssuedAt,
-    inspectorTin: formValues.inspectorTin,
-    box3ApplicantSignatureDate: formValues.box3ApplicantSignatureDate,
-    box3ApplicantAddress: formValues.box3ApplicantAddress,
-    box3ApplicantGovtIdNo: formValues.box3ApplicantGovtIdNo,
-    box3ApplicantIdDateIssued: formValues.box3ApplicantIdDateIssued,
-    box3ApplicantIdPlaceIssued: formValues.box3ApplicantIdPlaceIssued,
-    box4LotOwnerRepSignatureDate: formValues.box4LotOwnerRepSignatureDate,
-    box4LotOwnerRepAddress: formValues.box4LotOwnerRepAddress,
-    box4LotOwnerRepGovtIdNo: formValues.box4LotOwnerRepGovtIdNo,
-    box4LotOwnerRepIdDateIssued: formValues.box4LotOwnerRepIdDateIssued,
-    box4LotOwnerRepIdPlaceIssued: formValues.box4LotOwnerRepIdPlaceIssued,
-  };
 
-  const jsonString = JSON.stringify(dataToDownload, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "unified_application_data.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+// Function to save form data to local storage (not called on submit anymore, only if you intend to save draft)
+const saveFormData = () => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formValues));
 };
 
+// Function to load form data from local storage
+const loadFormData = () => {
+  const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+    // Use setValues to populate the form fields
+    setValues(parsedData);
+  }
+};
+
+// Function to clear form data from local storage
+const clearFormData = () => {
+  localStorage.removeItem(LOCAL_STORAGE_KEY);
+};
+
+// Handle Reset Form button click and also called after submission
+const handleReset = () => {
+  resetForm({
+    values: {
+      applicationType: 'Simple', // Set to desired initial value
+      applicationStatus: 'NEW',  // Set to desired initial value
+      lastName: null,
+      firstName: null,
+      middleName: null,
+      tin: null,
+      // isEnterpriseOwned is a ref, so reset it directly
+      formOwnership: null,
+      ownerAddressNo: null,
+      ownerAddressStreet: null,
+      ownerAddressBarangay: null,
+      ownerAddressMunicipal: "Naga City", // Keep default or set to null if truly empty
+      ownerAddressZipCode: null,
+      contactNumber: null,
+      lotNo: null,
+      blkNo: null,
+      tctNo: null,
+      taxDecNo: null,
+      constructionStreet: null,
+      constructionBarangay: null,
+      constructionMunicipal: "Naga City", // Keep default or set to null if truly empty
+      scopeOfWork: [], // Empty array for multi-select
+      otherScopeOfWork: null,
+      occupancyGroup: null,
+      occupancyType: null,
+      otherOccupancyType: null,
+      occupancyClassified: null,
+      numberOfUnits: null,
+      numberOfStorey: null,
+      totalFloorArea: null,
+      lotArea: null,
+      costBuilding: null,
+      costElectrical: null,
+      costMechanical: null,
+      costElectronics: null,
+      costPlumbing: null,
+      costEquipment: null,
+      proposedDate: null,
+      expectedDate: null,
+      inspectorAddress: null,
+      prcNo: null,
+      ptrNo: null,
+      ptrDateIssued: null,
+      ptrIssuedAt: null,
+      inspectorTin: null,
+      box3ApplicantSignatureDate: null,
+      box3ApplicantAddress: null,
+      box3ApplicantGovtIdNo: null,
+      box3ApplicantIdDateIssued: null,
+      box3ApplicantIdPlaceIssued: null,
+      box4LotOwnerRepSignatureDate: null,
+      box4LotOwnerRepAddress: null,
+      box4LotOwnerRepGovtIdNo: null,
+      box4LotOwnerRepIdDateIssued: null,
+      box4LotOwnerRepIdPlaceIssued: null,
+    },
+  });
+  // Also explicitly reset isEnterpriseOwned if it's not managed by useField
+  isEnterpriseOwned.value = false;
+};
+
+// Continue to Document Forms button action
 const continueToDocumentForms = () => {
   showCompletionDialog.value = false;
-  // Navigate to the next page or section of the application
+  // Navigate to the next step or route
   router.push({
     name: "DocumentForms",
-    params: {
+    query: {
       applicationNumber: generatedApplicationNumber.value,
       password: generatedPassword.value,
     },
   });
 };
 
-const copyToClipboard = (text) => {
-  document.execCommand('copy');
-  console.log("Copied to clipboard!");
+// Handle form download (placeholder)
+const handleDownload = () => {
+  alert("Downloading form (feature not yet implemented).");
+  showCompletionDialog.value = false;
 };
+
+// Load form data when the component is mounted
+onMounted(() => {
+  loadFormData();
+});
 </script>
 
-
 <style scoped>
-/* Your existing styles */
-.acknowledgment-line {
-  display: inline-block;
-  border-bottom: 1px solid black;
-  min-width: 50px;
-  text-align: center;
-  margin: 0 5px;
+/* Stepper styles (from your original code) */
+.stepper-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.acknowledgment-line-short {
-  display: inline-block;
-  border-bottom: 1px solid black;
-  min-width: 30px;
+.stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin: 0 5px;
+  position: relative;
+  flex-shrink: 0; /* Prevent shrinking */
+  padding: 0 10px; /* Add some padding */
 }
 
-.acknowledgment-line-long {
-  display: inline-block;
-  border-bottom: 1px solid black;
-  min-width: 200px;
-  text-align: center;
-  margin: 0 5px;
+.stepper-icon {
+  font-size: 40px; /* Adjust icon size */
+  color: #cccccc;
+  transition: color 0.3s;
 }
 
-/* Enhanced styles for acknowledgment fields as text-fields */
+.stepper-item.active .stepper-icon {
+  color: #1976d2; /* Active color */
+}
+
+.stepper-text {
+  font-size: 14px;
+  color: #888888;
+  margin-top: 5px;
+  transition: color 0.3s;
+}
+
+.stepper-item.active .stepper-text {
+  color: #1976d2; /* Active color */
+  font-weight: bold;
+}
+
+.stepper-line {
+  flex-grow: 1;
+  height: 2px;
+  background-color: #cccccc;
+  margin: 0 -10px; /* Overlap with padding of items */
+}
+
+/* Acknowledgment section field styling */
 .acknowledgment-field {
   display: inline-block;
   width: auto; /* Adjust width as needed */
@@ -1679,34 +1626,90 @@ const copyToClipboard = (text) => {
 .stepper-icon {
   font-size: 40px;
   /* Adjust icon size */
-  color: grey;
-}
-
-.stepper-text {
-  font-size: 0.9em;
-  color: grey;
-  margin-top: 5px;
-  white-space: nowrap;
-  /* Keep text on one line */
+  color: #cccccc;
+  transition: color 0.3s;
 }
 
 .stepper-item.active .stepper-icon {
-  color: #1976d2;
-  /* Primary color for active icon */
+  color: #1976d2; /* Active color */
+}
+
+.stepper-text {
+  font-size: 14px;
+  color: #888888;
+  margin-top: 5px;
+  transition: color 0.3s;
 }
 
 .stepper-item.active .stepper-text {
-  color: #000;
-  /* Darker text for active step */
+  color: #1976d2; /* Active color */
   font-weight: bold;
 }
 
 .stepper-line {
   flex-grow: 1;
   height: 2px;
-  background-color: grey;
-  margin: 0 10px;
+  background-color: #cccccc;
+  margin: 0 -10px; /* Overlap with padding of items */
 }
 
-/* Your existing styles continue... */
+/* Acknowledgment section field styling */
+.acknowledgment-line-long {
+  border-bottom: 1px solid #000;
+  /* Dark line for signature */
+  display: inline-block;
+  width: auto;
+  min-width: 200px;
+  /* Minimum width for the line */
+  vertical-align: middle;
+}
+
+.acknowledgment-field {
+  display: inline-block;
+  width: auto; /* Adjust width as needed */
+  vertical-align: middle;
+  min-width: 150px; /* Base minimum width */
+  margin: 0 5px;
+}
+
+.acknowledgment-field-short {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+  min-width: 80px; /* Smaller minimum width for short fields */
+  margin: 0 5px;
+}
+
+.acknowledgment-field-long {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+  min-width: 250px; /* Larger minimum width for long fields */
+  margin: 0 5px;
+}
+
+/* Stepper styles or the stepper */
+.stepper-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  flex-shrink: 0; /* Prevent shrinking */
+  padding: 0 10px; /* Add some padding */
+}
+
+.stepper-icon {
+  font-size: 40px;
+  /* Adjust icon size */
+  color: #cccccc;
+  transition: color 0.3s;
+}
 </style>

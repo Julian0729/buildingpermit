@@ -61,7 +61,7 @@
         <v-btn color="grey-darken-1" to="/DocumentForms">Previous Step</v-btn>
       </v-col>
       <v-col cols="auto">
-        <v-btn color="success" @click="finalizeApplication">Finalize Application</v-btn>
+        <v-btn color="success" @click="finalizeApplication">Submit Application</v-btn>
       </v-col>
     </v-row>
   </v-container>
